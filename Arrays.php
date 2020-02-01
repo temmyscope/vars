@@ -48,12 +48,6 @@ class Arrays Implements Countable//, Iterator
     return new Arrays( $new );
   }
 
-
-  public function count(): int
-  {
-    return count($this->var);
-  }
-
   public function last(): Arrays
   {
     return new Arrays( end($this->var) );
@@ -64,35 +58,37 @@ class Arrays Implements Countable//, Iterator
     return new Arrays( $this->var[0] );
   }
 
-  public function exists(string $k): bool
-  {
-    foreach ($this->var as $key) {
-      if (isset($key[$k])) {
-        return true;
-      }else{
-        return false;
-      }
-    }
-  }
+  /**
+  * @method(s) for data modification
+  * START
+  */
 
   /**
+  * Apply a closure | method | function on certain keys and store result in the $to key
   * @param Callable (array | Closure) $fn
   * @example [$object, method] OR function() use {}
+  * @param string $to
   */
-	public function apply($to_key, Callable $fn)
+	public function apply(Callable $fn, $to, ...$_keys)
 	{
-    foreach ($this->var as &$k) {
-      $k[$to_key] = call_user_func_array($fn, $k[$to_key]);
+    $new = $this->var;
+    foreach($new as $key => $value){
+      $params = [];
+      foreach ($_keys as $k => $v) {
+        $params[] = $value[$v];
+      }array_walk($_keys, function(){
+        return ;
+      });
+      /*
+      $params = array_map(function($_key){
+        return $value[$_key];
+      }, $_keys);
+      */
+      $value[$to] = call_user_func_array($fn, $_keys);
+      //$value[$to] = call_user_func_array($fn, $params);
+      //(function(...$args){ return $fn($args); })($_keys);
     }
-    /**
-		foreach ($this->var as $k => $v) {
-			
-		}
-    array_walk($this->var, function(&$value[$to_key], $key) {
-     //apply action on $value[$to_key];
-    });
-    */
-    return $this;
+    return new Arrays( $new );
 	}
 
   public function whitelist(Array $whitelist): Arrays
@@ -105,66 +101,57 @@ class Arrays Implements Countable//, Iterator
   }
 
   public function merge(array $keys, string $new_name){
-		foreach ($this->var as &$k) {
-			$k[$new_name] = '';
-			foreach ($keys as $key) {
-				$k[$new_name] .= $k[$key]." ";
-			}
-			rtrim($k[$new_name], $separator);
-		}
-		return $this;
-	}
+    $new = $this->var;
+		foreach ($new as $k => &$value) {
+			$value[$new_name] = [];
 
-  private function objectify(array $arr): Array{
-		$new_class = [];
-		foreach ($arr as $key => $value) {
-			$new_class[] = (object) $value;
+			foreach ($keys as $key) {
+				$value[$new_name][] = $value[$key];
+			}
+
 		}
-		return $new_class;
+		return new Arrays( $new );
 	}
 
   /**
   * @param Array $k_v
-  * @example
-  * <pre>
-  * $k_v = [ 'key' => 'value' ]
-  * </pre>
+  * @example Array $k_v = [ 'key' => 'value' ]
+  * @return Arrays
   */
 
-	public function search(Array $k_v ): ArrayObject
+	public function search(Array $k_v ): Arrays
 	{
-		$this->tmp = [];
+		$new = [];
 		foreach ($this->var as $key => $value) {
 			while ( list($k, $v) = each($k_v) ) {
-				if ( isset($key[$k]) && $key[$k] == $v ) {
-					$this->tmp[] = $this->var[$key]; // $this->tmp[] = current($this->var);
+				if ( isset($value[$k]) && $value[$k] == $v ) {
+					$new[] = $value;
 				}
 			}
 		}
-		return new ArrayObject($this->tmp);
+		return new Arrays( $new );
 	}
 
 	public function extract_by_key($key)
 	{
-		$this->tmp = [];
-		foreach($this->var as &$k){
-  		if(array_key_exists($key, $k)){
-	 	   	$this->tmp[] = $k[$key];
+		$new = [];
+		foreach($this->var as $k => $value){
+  		if(array_key_exists( $key, $value )){
+	 	   	$new[] = $value;
 		  }
 	  }
-		return $this->tmp;
+    return new Arrays($new);
 	}
 
 	public function extract_key($key)
 	{
 		$new = [];
-		foreach ($this->var as $k) {
-			if ( array_key_exists($key, $k) ) {
-				$new[] = $k[$key]; // $this->tmp[] = current($this->var);
+		foreach ($this->var as $k => $value) {
+			if ( array_key_exists($key, $value) ) {
+				$new[] = $value;
 			}
 		}
-		return $this->tmp;
-    return new Arrays($new);
+    return new Arrays( $new );
 	}
 
 	public function exclude_by_key(string $key): Arrays
@@ -175,7 +162,7 @@ class Arrays Implements Countable//, Iterator
 				unset($new[$k]);
 			}
 	  }
-    return new Arrays($new);
+    return new Arrays( $new );
 	}
 
   /**
@@ -192,29 +179,32 @@ class Arrays Implements Countable//, Iterator
           unset( $key[$k] );
         }
       }
-      /*
-      while ( list($k, $v) = each($k_v) ) {
-				if ( $key[$k] == $v ) {
-					unset($new[$key]); //unset( current($new) );
-				}
-			}
-      */
 		}
     return new Arrays($new);
 	}
 
-	public function exclude_key(Array $keys): Arrays
+  /** 
+  * Exclude keys from
+  * @param variadic argument $keys
+  */
+	public function exclude_key(...$keys): Arrays
 	{
-    $new = $this->var;
-		foreach ($new as $k => $v) {
-      foreach ($keys as $one_key) {
-        if( isset($v[$one_key]) ){
-          unset( $v[$key] );
-        }  
-      }
-		}
-    return new Arrays($new);
+    return $this->hide($keys);
 	}
+
+
+  public function hide(...$keys): Arrays
+  {
+    $new = $this->var;
+    foreach ($new as $key => &$value) {
+      foreach ($keys as $k => $v) {
+        if(array_key_exists($v, $value)){
+          unset($value[$v]);
+        }
+      }  
+    }
+    return new Arrays($new);
+  }
 
   public function random(int $size): Arrays
   {
@@ -229,11 +219,54 @@ class Arrays Implements Countable//, Iterator
     return new Arrays($data);
   }
 
+  public function trim(int $count, int $start = 0)
+  {
+    $k = [];
+    for($i=$start; $i < $count; $i++){ 
+      $k[] = $this->var[$i];
+    }
+    return new Arrays($k);
+  }
+
+  /**
+  * END
+  */  
+
+  /**
+  * @method(s) that return current status of data
+  * START
+  */
+
+  public function count(): int
+  {
+    return count($this->var);
+  }
+
+  public function exists(string $k): bool
+  {
+    foreach ($this->var as $key) {
+      if (isset($key[$k])) {
+        return true;
+      }else{
+        return false;
+      }
+    }
+  }
+
+  /**
+  * END
+  */
+
   /**
   * @method(s) for retrieval of data 
   */
 
   public function get(): Array
+  {
+    return $this->var;
+  }
+
+  public function return()
   {
     return $this->var;
   }
@@ -251,26 +284,6 @@ class Arrays Implements Countable//, Iterator
   public function unserialize()
   {
     return unserialize($this->var);
-  }
-
-  public function return(int $count, int $start = 0)
-  {
-    $k = []; 
-    $counter = 0;
-    foreach ($this->var as $key => $value) {
-      if( $key >= $start && $counter <= $count) {
-        $k[] = $value;
-      }elseif ( $key > ($start + $count) ) {
-        break;
-      }
-      $counter++;
-    }
-    return $k;
-    /* alternative means
-    for($i=$start; $i < $count; $i++){ 
-      $k[] = $this->var[$i];
-    }
-    */
   }
 
   public function returnJson()
@@ -292,43 +305,15 @@ class Arrays Implements Countable//, Iterator
     return $obj;
   }
 
-
-
-/*
-  public function next()
-  {
-    return next($this->var);
+  private function objectify(array $arr): Array{
+    $new_class = [];
+    foreach ($arr as $key => $value) {
+      $new_class[] = (object) $value;
+    }
+    return $new_class;
   }
 
-  public function key($value='')
-  {
-    key(array);
-  }
-
-  public function rewind($value='')
-  {
-    
-  }
-
-  public function valid($key)
-  {
-    return ( null !== $ );
-  }
-
-  public function current(): Iterator
-  {
-    return current($this->var);
-  }
-
-  public function depth(): int
-	{
-		$depth = 0;
-		while ( list($k, $v) = each($this->var) ) {
-			while ( key($v) !== null ) {
-				$depth += 1;
-			}
-		}
-		return $depth;
-	}
-*/
+  /**
+  * END
+  */
 } 
