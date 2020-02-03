@@ -29,7 +29,7 @@
         }
     ],
     "keywords": [
-        "router",
-        "fast router", "simple router"
+        "encode", "encrypt", "decrypt",
+        "array manipulator", "string"
     ]
 }

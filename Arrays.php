@@ -2,50 +2,44 @@
 Namespace Seven\Vars;
 
 use \Countable;
-use \ArrayObject;
-use \SplFixedArray;
 
-class Arrays Implements Countable//, Iterator
+class Arrays Implements Countable
 {
 	/**
 	*@property var
-	*@property tmp
 	*/
-	protected $var, $tmp = [];
-  protected $position;
+	protected $var = [];
 
 	public function __construct(Array $arr = [])
 	{
-		$this->var = $arr; //SplFixedArray::fromArray()
+		$this->var = $arr;
 	}
- 	
-	final public function sanitize(): Arrays{
-  	$clean_input = [];
-    foreach ($this->var as $k => $v) {
-      if ($v != '') $clean_input[$k] = htmlentities($v, ENT_QUOTES, 'UTF-8');
-    }
-    return new Arrays($clean_input);
+
+  public function add(Array $var)
+  {
+    array_push($this->var, $var);
+    return $this; 
   }
 
-  public function pop()
+  public function pop(): Arrays
   {
-    $new = array_pop($this->var);
-    return new Arrays( $new );
+    array_pop($this->var);
+    return $this;
   }
 
-  public function shift()
+  public function shift(): Arrays
   {
-    $new = array_shift($this->var);
-    return new Arrays( $new );
+    array_shift($this->var);
+    return $this;
   }
 
-  public function sort($key)
+  public function sort(string $key): Arrays
   {
-    $new = usort($this->var, 
-      function ($item1, $item2) use ($key) {
-        return $item1[$key] <=> $item2[$key];
+    usort($this->var, 
+      function ($arr1, $arr2) use ($key) {
+        return $arr1[$key] <=> $arr2[$key];
     });
-    return new Arrays( $new );
+    return $this;
   }
 
   public function last(): Arrays
@@ -68,69 +62,41 @@ class Arrays Implements Countable//, Iterator
   * @param Callable (array | Closure) $fn
   * @example [$object, method] OR function() use {}
   * @param string $to
+  * @param variadic $_keys
   */
-	public function apply(Callable $fn, $to, ...$_keys)
+	public function apply(Callable $fn, $to, ...$_keys): Arrays
 	{
-    $new = $this->var;
-    foreach($new as $key => $value){
+    foreach($this->var as $key => &$value){
       $params = [];
       foreach ($_keys as $k => $v) {
         $params[] = $value[$v];
-      }array_walk($_keys, function(){
-        return ;
-      });
-      /*
-      $params = array_map(function($_key){
-        return $value[$_key];
-      }, $_keys);
-      */
-      $value[$to] = call_user_func_array($fn, $_keys);
-      //$value[$to] = call_user_func_array($fn, $params);
-      //(function(...$args){ return $fn($args); })($_keys);
+      }
+      $value[$to] = call_user_func_array($fn, $params);
     }
-    return new Arrays( $new );
+    return $this;
 	}
 
-  public function whitelist(Array $whitelist): Arrays
-  {
-    $new = [];
-    foreach ($this->var as $key => $value) {
-      $new [] = array_intersect_key($value, array_flip($whitelist))
-    }
-    return new Arrays($new);
-  }
-
   public function merge(array $keys, string $new_name){
-    $new = $this->var;
-		foreach ($new as $k => &$value) {
+		foreach($this->var as $k => &$value){
 			$value[$new_name] = [];
-
 			foreach ($keys as $key) {
 				$value[$new_name][] = $value[$key];
 			}
-
 		}
-		return new Arrays( $new );
+		return $this;
 	}
 
-  /**
-  * @param Array $k_v
-  * @example Array $k_v = [ 'key' => 'value' ]
-  * @return Arrays
-  */
-
-	public function search(Array $k_v ): Arrays
-	{
-		$new = [];
-		foreach ($this->var as $key => $value) {
-			while ( list($k, $v) = each($k_v) ) {
-				if ( isset($value[$k]) && $value[$k] == $v ) {
-					$new[] = $value;
-				}
-			}
-		}
-		return new Arrays( $new );
-	}
+  public function concat(array $keys, string $new_name, string $separator = "_"): Arrays
+  {
+    foreach($this->var as $key => &$value){
+      $value[$new_name] = "";
+      foreach ($keys as $k => $v) {
+        $value[$new_name] .= $value[$v].$separator;
+      }
+      $value[$new_name] = trim($value[$new_name], $separator);
+    }
+    return $this;
+  }
 
 	public function extract_by_key($key)
 	{
@@ -140,29 +106,30 @@ class Arrays Implements Countable//, Iterator
 	 	   	$new[] = $value;
 		  }
 	  }
-    return new Arrays($new);
+    $this->var = $new;
+    return $this;
 	}
 
 	public function extract_key($key)
 	{
-		$new = [];
-		foreach ($this->var as $k => $value) {
-			if ( array_key_exists($key, $value) ) {
-				$new[] = $value;
+    $new = [];
+		foreach ($this->var as $k => $v) {
+			if ( array_key_exists($key, $v) ) {
+				$new[] = $v;
 			}
 		}
-    return new Arrays( $new );
+    $this->var = $new;
+    return $this;
 	}
 
 	public function exclude_by_key(string $key): Arrays
 	{
-    $new = $this->var;
-		foreach($new as $k => $v){
+		foreach($this->var as $k => &$v){
 			if(array_key_exists($key, $v)){
-				unset($new[$k]);
+				unset($this->var[$k]);
 			}
 	  }
-    return new Arrays( $new );
+    return $this;
 	}
 
   /**
@@ -171,16 +138,14 @@ class Arrays Implements Countable//, Iterator
   */
 	public function exclude_by(Array $k_v ): Arrays
 	{
-    $new = $this->var;
-		foreach ($new as &$key) {
-      foreach ($k_v as $one){ 
-        [$k, $v] = $one;
-        if ( isset($key[$k]) && $key[$k] == $v ) { 
-          unset( $key[$k] );
+		foreach ( $this->var as $key => &$value ) {
+      foreach ($k_v as $k => $v){
+        if ( array_key_exists($k, $value) && $value[$k] == $v ) { 
+          unset( $this->var[$key] );
         }
       }
 		}
-    return new Arrays($new);
+    return $this;
 	}
 
   /** 
@@ -189,48 +154,63 @@ class Arrays Implements Countable//, Iterator
   */
 	public function exclude_key(...$keys): Arrays
 	{
-    return $this->hide($keys);
+    return $this->hide(...$keys);
 	}
-
 
   public function hide(...$keys): Arrays
   {
-    $new = $this->var;
-    foreach ($new as $key => &$value) {
+    foreach ($this->var as $key => &$value) {
       foreach ($keys as $k => $v) {
         if(array_key_exists($v, $value)){
           unset($value[$v]);
         }
       }  
     }
-    return new Arrays($new);
+    return $this;
   }
 
-  public function random(int $size): Arrays
+  /**
+  * @method (s) that operate and return an array immediately
+  */
+
+  /**
+  * @param Array $k_v
+  * @example Array $k_v = [ 'key' => 'value' ]
+  * @return Arrays
+  */
+
+
+  public function whitelist(Array $whitelist): Array
   {
-    $size_list = $data = [];
-    for($i=0; $i < $size; $i++){
-      $size_list[] = $i;
+    $new = [];
+    foreach ($this->var as $key => $value) {
+      $new [] = array_intersect_key($value, array_flip($whitelist));
     }
-    shuffle($size_list);
-    foreach ($size_list as $key => $value) {
-      $data[] = $this->var[$value];
+    return $new;
+  }
+
+  public function search(Array $k_v )
+  {
+    $new = [];
+    foreach ($this->var as $key => $value) {
+      foreach ($k_v as $k => $v) {
+        if ( isset($value[$k]) && $value[$k] == $v ) {
+          $new[] = $value;
+        }
+      }
     }
-    return new Arrays($data);
+    return $new;
   }
 
   public function trim(int $count, int $start = 0)
   {
     $k = [];
-    for($i=$start; $i < $count; $i++){ 
+    $end = ($start + $count) - 1;
+    for($i=$start; $i <= $end; $i++){
       $k[] = $this->var[$i];
     }
-    return new Arrays($k);
+    return $k;
   }
-
-  /**
-  * END
-  */  
 
   /**
   * @method(s) that return current status of data
@@ -254,10 +234,6 @@ class Arrays Implements Countable//, Iterator
   }
 
   /**
-  * END
-  */
-
-  /**
   * @method(s) for retrieval of data 
   */
 
@@ -267,11 +243,6 @@ class Arrays Implements Countable//, Iterator
   }
 
   public function return()
-  {
-    return $this->var;
-  }
-
-  public function returnAll(): Array
   {
     return $this->var;
   }
@@ -291,17 +262,21 @@ class Arrays Implements Countable//, Iterator
     return json_encode($this->var);
   }
 
+  public function getJson()
+  {
+    $this->returnJson();
+  }
+
   public function returnObjects()
   {
-    $obj = (!empty($this->tmp)) ? $this->tmp: $this->var;
-    foreach ($obj as $key => $value) {
+    $obj = [];
+    foreach ($this->var as $key => $value) {
       if (is_array($value)) {
         $obj[] = $this->objectify($value);
       }else{
         $obj = (object) $value;
       }
     }
-    unset($this->tmp);
     return $obj;
   }
 
@@ -313,7 +288,4 @@ class Arrays Implements Countable//, Iterator
     return $new_class;
   }
 
-  /**
-  * END
-  */
 } 

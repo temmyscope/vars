@@ -4,6 +4,47 @@
    //apply action on $value[$to_key];
   });
 
+$users = [
+  ['name' => 'Alice', 'age' => 20],
+  ['name' => 'Bobby', 'age' => 22],
+  ['name' => 'Carol', 'age' => 17],
+  ['name' => 'Elish', 'age' => 19 ]
+];
+$class = new Seven\Vars\Arrays($users);
+
+$var= $class->apply( function($age){ 
+  return $age * 0.5;
+}, 'age', 'age');
+
+$class->apply(function($v){
+  return htmlentities($v, ENT_QUOTES, 'UTF-8');
+}, 'name', 'name');
+
+
+var_dump( $class->add( [ 'name' => 'Debby', 'age' => 15 ] ) );
+
+var_dump( $var );
+
+
+var_dump( $class->sort('age')->return() );
+
+  public function random(int $size): Array
+  {
+    $size_list = $data = [];
+    for($i=0; $i <= $size; $i++){
+      $size_list[] = $i;
+    }
+    shuffle($this->var);
+    shuffle($size_list);
+    array_shift($size_list);
+
+    foreach ($size_list as $key => $value) {
+      $data[] = $this->var[$value];
+    }
+    return $data;
+  }
+
+
   public function merge(array $keys, string $new_name){
     $new = $this->var;
     foreach ($new as $k => &$value) {

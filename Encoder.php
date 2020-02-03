@@ -1,9 +1,9 @@
 <?php
 Namespace Seven\Vars;
 
-use VariableInterface;
+use Strings;
 
-class Encoder Implements VariableInterface
+class Encoder extends Strings
 {
 	const ENCODE_STYLE_HTML = 0;
 	const ENCODE_STYLE_JAVASCRIPT = 1;
