@@ -1,7 +1,7 @@
 <?php
 Namespace Seven\Vars;
 
-Interface VariableInterface{
+Interface StringsInterface{
 
 	public function sanitize($dirty);
 

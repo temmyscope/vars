@@ -3,9 +3,9 @@ Namespace Seven\Vars;
 
 use \DateTime;
 use \DateTimeZone;
-use VariableInterface;
+use StringsInterface;
 
-class Strings Implements VariableInterface
+class Strings Implements StringsInterface
 {
  	/**
      * Checks if a string starts with a specific string
