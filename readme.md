@@ -7,7 +7,7 @@ The Arrays library of the SevenVars Package provides you a plethora of methods t
 
 PDA HOW-TO
 
-=>apply(keys, func_name or method): it applies a function to a certain key or keya.
+=>apply(Callable func, key, keys): it applies a function to a certain key or keya.
 
 =>extract_*() for extracting arrays that contain certain key(s) or values
 

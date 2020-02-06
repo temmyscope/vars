@@ -139,9 +139,9 @@ class Encoder extends Strings
 	}
 
 	/**
-	*
+	* @param string str
 	*/
-	final static public function get_unique_name($str): string
+	final static public function get_unique_name(string $str): string
 	{
 		return hash('SHA256', uniqid().microtime(true).random_bytes(8).$str);
 	}
@@ -155,9 +155,10 @@ class Encoder extends Strings
 	}
 
 	/**
-	* @param str is the string that needs hashing
+	* @param string str
+	* @param string hash
 	*/
-	final static public function match_hash($str, $hash): string
+	final static public function verify_hash($str, $hash): bool
 	{
 		return password_verify($str, $hash);
 	}	

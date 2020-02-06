@@ -3,6 +3,12 @@ Namespace Seven\Vars;
 
 use \Countable;
 
+/**
+ * @author Elisha Temiloluwa a.k.a TemmyScope (temmyscope@protonmail.com)
+ * @copyright MIT
+ *
+*/
+
 class Arrays Implements Countable
 {
 	/**
@@ -10,15 +16,26 @@ class Arrays Implements Countable
 	*/
 	protected $var = [];
 
-	public function __construct(Array $arr = [])
+  /**
+   * @param Array $arr is an array of arrays i.e. 2 levels deep array
+  **/
+  public function __construct(Array $arr = [])
 	{
 		$this->var = $arr;
 	}
 
   public function add(Array $var)
   {
-    array_push($this->var, $var);
-    return $this; 
+    $this->var[] = $var;
+    return $this;
+  }
+
+  public function add_each(Array $var)
+  {
+    foreach ($var as $key => $value) {
+      $this->var[] = $value;
+    }
+    return $this;
   }
 
   public function pop(): Arrays
@@ -27,11 +44,27 @@ class Arrays Implements Countable
     return $this;
   }
 
+  public function pop_each()
+  {
+    foreach ($this->var as $key => &$value) {
+      array_pop($value);
+    }
+    return $this;
+  }
+
   public function shift(): Arrays
   {
     array_shift($this->var);
     return $this;
   }
+
+  public function shift_each()
+  {
+    foreach ($this->var as $key => &$value) {
+      array_shift($value);
+    }
+    return $this;
+  }  
 
   public function sort(string $key): Arrays
   {
