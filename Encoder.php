@@ -136,30 +136,5 @@ class Encoder extends Strings
 
 	public static function toUTF8($str): String{
 		return (!mb_check_encoding($str, 'UTF-8')) ? mb_convert_encoding($str, 'UTF-8', mb_detect_encoding($str)) : $str;
-	}
-
-	/**
-	* @param string str
-	*/
-	final static public function get_unique_name(string $str): string
-	{
-		return hash('SHA256', uniqid().microtime(true).random_bytes(8).$str);
-	}
-
-	/**
-	* @param str is the string that needs hashing
-	*/
-	final static public function hash($str): string
-	{
-		return password_hash($str, PASSWORD_DEFAULT);
-	}
-
-	/**
-	* @param string str
-	* @param string hash
-	*/
-	final static public function verify_hash($str, $hash): bool
-	{
-		return password_verify($str, $hash);
 	}	
 }

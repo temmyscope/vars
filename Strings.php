@@ -92,6 +92,31 @@ class Strings Implements StringsInterface
 	}
 
 	/**
+	* @param string str
+	*/
+	final static public function get_unique_name(string $str): string
+	{
+		return hash('SHA256', uniqid().microtime(true).random_bytes(8).$str);
+	}
+
+	/**
+	* @param str is the string that needs hashing
+	*/
+	final static public function hash($str): string
+	{
+		return password_hash($str, PASSWORD_DEFAULT);
+	}
+
+	/**
+	* @param string str
+	* @param string hash
+	*/
+	final static public function verify_hash($str, $hash): bool
+	{
+		return password_verify($str, $hash);
+	}
+
+	/**
 	* @param <string> Time string
 	* @param <string> TimeZone
 	*/
