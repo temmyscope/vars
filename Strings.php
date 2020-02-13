@@ -3,9 +3,8 @@ Namespace Seven\Vars;
 
 use \DateTime;
 use \DateTimeZone;
-use StringsInterface;
 
-class Strings Implements StringsInterface
+class Strings
 {
  	/**
      * Checks if a string starts with a specific string
@@ -56,6 +55,31 @@ class Strings Implements StringsInterface
         return false;
     }
 
+    /**
+     * Checks if a string contains a specific string
+     *
+     * @param string $value
+     * @param string|array $contain
+     * @param bool $ignoreCase
+     * @return bool
+    */
+    public static function contains(string $str, $contain, bool $ignoreCase = false): bool
+    {
+    	if ($ignoreCase) {
+            $str = mb_strtolower($str);
+        }
+        $contain = is_array($contain) ? $contain : [$contain];
+        foreach ($contain as $val) {
+            if ($ignoreCase) {
+                $val = mb_strtolower($val);
+            }
+            if ( mb_strpos($str, $val) >= 0 ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
  	final public static function sanitize(String $dirty): String{
     	return htmlentities($dirty, ENT_QUOTES, 'UTF-8');
   	}
@@ -78,17 +102,17 @@ class Strings Implements StringsInterface
 
 	final static public function rand($len = 0){
 		$chars = 'qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPZXCVBNMLKJHGFDSA';
-		return substr(str_shuffle(($chars)), 0, ($len == 0) ? random_int(6, 64) : $len );
+		return substr(str_shuffle(($chars)), 0, (($len == 0) ? random_int(6, 64) : $len) );
 	}
 
 	public static function rand_token(): string
 	{
-    	return base64_encode(openssl_random_pseudo_bytes(random_int(32, 256)))
+    	return base64_encode( openssl_random_pseudo_bytes(random_int(32, 256)) );
 	}
 
 	public static function fixed_length_token(int $len): string
 	{
-    	return base64_encode(openssl_random_pseudo_bytes($len))
+    	return base64_encode(openssl_random_pseudo_bytes($len));
 	}
 
 	/**
@@ -111,7 +135,7 @@ class Strings Implements StringsInterface
 	* @param string str
 	* @param string hash
 	*/
-	final static public function verify_hash($str, $hash): bool
+	final static public function verify_hash(string $str, string $hash): bool
 	{
 		return password_verify($str, $hash);
 	}
@@ -121,7 +145,7 @@ class Strings Implements StringsInterface
 	* @param <string> TimeZone
 	*/
 
-	public static function time_from_string($str = 'now', $tz = 'UTC'): string{
+	public static function time_from_string(string $str = 'now', $tz = 'UTC'): string{
 		$var = new DateTime($time_str, new DateTimeZone($tz));
 		return $var->format('Y-m-d H:i:s');
 	}
