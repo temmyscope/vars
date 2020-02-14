@@ -1,5 +1,5 @@
 {
-    "name": "seven/vars",
+    "name": "sevens/vars",
     "description": "Simple Variable library Package For Encoding and Manipulating Strings and Arrays.",
     "type": "library",
     "version": "v0.9.1",
