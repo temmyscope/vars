@@ -5,17 +5,6 @@
     "version": "v0.9.1",
     "license": "MIT",
     "minimum-stability": "dev",
-    "source": {
-        "type": "git",
-        "url": "https://github.com/temmyscope/vars.git",
-        "reference": "e817e09c099ec4a1a833c3451c17056bb8b1bd71"
-    },
-    "dist": {
-        "type": "zip",
-        "url": "https://api.github.com/repos/temmyscope/vars/zipball/e817e09c099ec4a1a833c3451c17056bb8b1bd71",
-        "reference": "e817e09c099ec4a1a833c3451c17056bb8b1bd71",
-        "shasum": ""
-    },
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
