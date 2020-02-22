@@ -1,7 +1,7 @@
 <?php
 Namespace Seven\Vars;
 
-use Strings;
+use Seven\Vars\Strings;
 
 class Encoder extends Strings
 {

@@ -80,6 +80,18 @@ class Strings
         return false;
     }
 
+    public function match(string $str1, string $str2, bool $ignoreCase = false): bool
+    {
+    	if ($ignoreCase) {
+    		$str1 = mb_strtolower($str1);
+    		$str2 = mb_strtolower($str2);
+    	}
+    	if ( $str1 === $str2 ) {
+    		return true;
+    	}
+    	return false;
+    }
+
  	final public static function sanitize(String $dirty): String{
     	return htmlentities($dirty, ENT_QUOTES, 'UTF-8');
   	}
