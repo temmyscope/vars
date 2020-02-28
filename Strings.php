@@ -86,7 +86,7 @@ class Strings
     		$str1 = mb_strtolower($str1);
     		$str2 = mb_strtolower($str2);
     	}
-    	if ( $str1 === $str2 ) {
+    	if ( $str1 == $str2 ) {
     		return true;
     	}
     	return false;
@@ -125,6 +125,11 @@ class Strings
 	public static function fixed_length_token(int $len): string
 	{
     	return base64_encode(openssl_random_pseudo_bytes($len));
+	}
+
+	final static public function limit($var, $count = 2225)
+	{
+		return mb_substr($var, 0, $count);
 	}
 
 	/**
