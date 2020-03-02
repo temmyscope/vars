@@ -1,32 +1,5 @@
 <?php
 /*
-  array_walk($this->var, function(&$value[$to_key], $key) {
-   //apply action on $value[$to_key];
-  });
-
-$users = [
-  ['name' => 'Alice', 'age' => 20],
-  ['name' => 'Bobby', 'age' => 22],
-  ['name' => 'Carol', 'age' => 17],
-  ['name' => 'Elish', 'age' => 19 ]
-];
-$class = new Seven\Vars\Arrays($users);
-
-$var= $class->apply( function($age){ 
-  return $age * 0.5;
-}, 'age', 'age');
-
-$class->apply(function($v){
-  return htmlentities($v, ENT_QUOTES, 'UTF-8');
-}, 'name', 'name');
-
-
-var_dump( $class->add( [ 'name' => 'Debby', 'age' => 15 ] ) );
-
-var_dump( $var );
-
-
-var_dump( $class->sort('age')->return() );
 
   public function random(int $size): Array
   {
