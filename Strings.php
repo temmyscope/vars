@@ -6,6 +6,20 @@ use \DateTimeZone;
 
 class Strings
 {
+	
+	public function __construct($alg, $salt){
+		$this->alg = $alg;
+		$this->salt = $salt;
+	}
+
+	public function encrypt($data){
+		return base64_encode(openssl_encrypt($data, $this->alg, $this->salt));
+	}
+
+	public function decrypt($encrypted){
+		return openssl_decrypt(base64_decode($encrypted),  $this->alg, $this->salt);
+	}
+
  	/**
      * Checks if a string starts with a specific string
      *
@@ -30,6 +44,7 @@ class Strings
         }
         return false;
     }
+
     /**
      * Checks if a string ends with a specific string
      *

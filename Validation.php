@@ -25,6 +25,14 @@ class Validation
 		$this->source = $source;
 	}
 
+	public function valid()
+	{
+		if ($this->_passed == true) {
+			return true;
+		}
+		return false;
+	}
+
 	/**
 	 * 
 	 *
@@ -37,7 +45,7 @@ class Validation
 	 * ]);
 	 **/
 	
-	public function rules(Array $items): Validate
+	public function rules(Array $items): Validation
 	{
 		foreach($items as $item => $rules) {
 			$display = $rules['display'];
@@ -84,7 +92,7 @@ class Validation
 								$this->_errors[] = "{$display} has to be a number. Please use a numeric value.";
 							}
 							break;
-						case 'valid_email':
+						case 'is_email':
 							if(!filter_var($value, FILTER_VALIDATE_EMAIL)){
 								$this->_errors[] = "{$display} must be a valid email address.";
 							}
