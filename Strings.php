@@ -111,10 +111,6 @@ class Strings
     	return htmlentities($dirty, ENT_QUOTES, 'UTF-8');
   	}
 
-  	final public function match(string $var1, string $var2) : bool{
-		return ($var1 == $var2) ? true : false;
-	}
-
 	final public static function is_Alnum($var): bool{
 		return ctype_alnum($var);
 	}
