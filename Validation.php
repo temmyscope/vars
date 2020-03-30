@@ -5,7 +5,7 @@ namespace Seven\Vars;
  * Validation
  *
  * @package Validator
- * @author 
+ * @author Elisha Temiloluwa <temmyscope@protonmail.com>
  **/
 class Validation
 {
@@ -17,7 +17,7 @@ class Validation
 	*/
 
 	private $source;
-	private $_passed = true;
+	private $_passed = false;
 	private $_errors = [];
 	
 	public function __construct($source)
@@ -27,10 +27,7 @@ class Validation
 
 	public function valid()
 	{
-		if ($this->_passed == true) {
-			return true;
-		}
-		return false;
+		return $this->_passed;
 	}
 
 	/**
@@ -137,5 +134,10 @@ class Validation
 			$this->_passed = true;
 		}
 		return $this;
+	}
+
+	public function errors(): array
+	{
+		return $this->_errors;
 	}
 }
