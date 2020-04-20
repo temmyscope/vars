@@ -6,18 +6,30 @@ use \DateTimeZone;
 
 class Strings
 {
-	
-	public function __construct($alg, $salt){
+	/**
+	* @param string alg, is the encryption algorithm to be used ()
+	* @param string salt, is a 32 character-long string for encrypting your data  
+	* @param string iv is a base64 encoded : base64_encode( openssl_random_pseudo_bytes( openssl_cipher_iv_length() ));
+	*/
+	public function __construct($alg, $salt, $iv){
 		$this->alg = $alg;
 		$this->salt = $salt;
+		$this->iv = $iv;
 	}
-
+	/** 
+	*  @param string data to be encrypted
+	*/
 	public function encrypt($data){
-		return base64_encode(openssl_encrypt($data, $this->alg, $this->salt));
+		return @base64_encode( openssl_encrypt($data, $this->alg, $this->salt, $options = 0, $this->iv, $tag = NULL) );
+		//return base64_encode( openssl_encrypt($data, $this->alg, $this->salt) );
 	}
 
+	/** 
+	*  @param string data to be decrypted
+	*/
 	public function decrypt($encrypted){
-		return openssl_decrypt(base64_decode($encrypted),  $this->alg, $this->salt);
+		return openssl_decrypt(  base64_decode($encrypted),  $this->alg, $this->salt, $options = 0, $this->iv, $tag = NULL );
+		//return openssl_decrypt( base64_decode($encrypted),  $this->alg, $this->salt);
 	}
 
  	/**
@@ -95,6 +107,14 @@ class Strings
         return false;
     }
 
+	/**
+     * Checks if two strings match
+     *
+     * @param string $str1
+     * @param string $str2
+     * @param bool $ignoreCase
+     * @return bool
+    */
     public function match(string $str1, string $str2, bool $ignoreCase = false): bool
     {
     	if ($ignoreCase) {
@@ -107,37 +127,73 @@ class Strings
     	return false;
     }
 
+	/**
+    * Sanitizes a string
+	*
+	* @return a sanitized string
+	*/
  	final public static function sanitize(String $dirty): String{
     	return htmlentities($dirty, ENT_QUOTES, 'UTF-8');
   	}
 
+	/**
+	 * checks if a string only conttains alpha-numeric characters
+	 * @return bool
+	*/
 	final public static function is_Alnum($var): bool{
 		return ctype_alnum($var);
 	}
 
+	/**
+	 * checks if a string is a valid url
+	 * @return bool
+	*/
 	final public static function is_Url($var): bool{
 		return filter_var($var, FILTER_VALIDATE_URL) ? true : false;
 	}
 
+	/**
+	 * checks if a string is a valid email
+	 * @return bool
+	*/
 	final public static function is_Email($var): bool{
 		return filter_var($var, FILTER_VALIDATE_EMAIL) ? true : false;
 	}
 
+	/**
+	 * Returns a string of the specified length
+	 * @param int len
+	 * @return string
+	 */
 	final static public function rand($len = 0){
 		$chars = 'qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPZXCVBNMLKJHGFDSA';
 		return substr(str_shuffle(($chars)), 0, (($len == 0) ? random_int(6, 64) : $len) );
 	}
 
+	/**
+	 * Returns a very random string
+	 * @return string
+	 */	
 	public static function rand_token(): string
 	{
     	return base64_encode( openssl_random_pseudo_bytes(random_int(32, 256)) );
 	}
 
+	/**
+	 * Returns a very random string
+	 * @param len
+	 * @return string
+	 */
 	public static function fixed_length_token(int $len): string
 	{
     	return base64_encode(openssl_random_pseudo_bytes($len));
 	}
 
+	/**
+	* @param string var
+	* @param int count
+	* @return reduced string to the specified length
+	*/
 	final static public function limit($var, $count = 2225)
 	{
 		return mb_substr($var, 0, $count);
@@ -174,10 +230,14 @@ class Strings
 	*/
 
 	public static function time_from_string(string $str = 'now', $tz = 'UTC'): string{
-		$var = new DateTime($time_str, new DateTimeZone($tz));
+		$var = new DateTime($str, new DateTimeZone($tz));
 		return $var->format('Y-m-d H:i:s');
 	}
 
+	/**
+	* @param <string> time
+	* @return <string> 
+	*/
 	public static function time_to_string($time): string{
 		$current_time = time();
 		$time = strtotime($time);	
