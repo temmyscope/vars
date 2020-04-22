@@ -94,8 +94,8 @@ class Arrays Implements Countable
   }  
 
   /** 
-   * Sorts all arrays inside the main array by checking the 'natural' order of the passed key in eah of those arrays
-   * @return Arrays $this
+  * Sorts all arrays inside the main array by checking the 'natural' order of the passed key in eah of those arrays
+  * @return Arrays $this
   */
   public function sort(string $key): Arrays
   {
@@ -105,7 +105,7 @@ class Arrays Implements Countable
     });
     return $this;
   }
-  
+
   public function up_sort(string $key): Arrays
   {
     return $this->sort($key);
