@@ -105,6 +105,20 @@ class Arrays Implements Countable
     });
     return $this;
   }
+  
+  public function up_sort(string $key): Arrays
+  {
+    return $this->sort($key);
+  }
+
+  public function down_sort(string $key): Arrays
+  {
+    usort($this->var, 
+      function ($arr1, $arr2) use ($key) {
+        return $arr2[$key] <=> $arr1[$key];
+    });
+    return $this;
+  }
 
   /** 
    * Returns the last array
