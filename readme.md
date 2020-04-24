@@ -5,7 +5,9 @@ Simple Variable library Package For Encoding and Manipulating Strings and Arrays
 
 The Arrays library of the SevenVars Package implements the in-built spl countable interface and provides you a plethora of methods to manipulate a level II deep array, i.e. an array of arrays.
 
-PDA HOW-TO
+Please Note that version 1.1.0 removes the Encoder class; all its methods are now part of the Strings Class
+
+Seven\Vars\Arrays HOW-TO
 
 ```bash
 =>apply(Callable $fn, $to, ...$_keys): it applies a function to a certain key or keys and stores it on the 'to' key.
@@ -18,13 +20,15 @@ PDA HOW-TO
 # use case and sample array type
 
 ```php
+use Seven\Vars\Arrays;
+
 $users = [
   ['name' => 'Alice', 'age' => 20],
   ['name' => 'Bobby', 'age' => 22],
   ['name' => 'Carol', 'age' => 17],
   ['name' => 'Elish', 'age' => 19 ]
 ];
-$class = new Seven\Vars\Arrays($users);
+$class = new Arrays($users); // or Arrays::init($users);
 
 $var= $class->apply( function($age){ 
   return $age * 0.5;
@@ -38,5 +42,7 @@ $class->apply(function($v){
 var_dump( $class->add( [ 'name' => 'Debby', 'age' => 15 ] ) );
 
 var_dump( $class->sort('age')->return() );
+
+var_dump( $class->down_sort('age')->return() );
 
 ```

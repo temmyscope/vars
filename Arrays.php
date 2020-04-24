@@ -22,6 +22,11 @@ class Arrays Implements Countable
   public function __construct(Array $arr = [])
 	{
 		$this->var = $arr;
+  }
+  
+  public static function init(Array $arr = [])
+	{
+		self::__construct($arr);
 	}
 
   /** 
