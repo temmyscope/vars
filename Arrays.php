@@ -26,7 +26,7 @@ class Arrays Implements Countable
   
   public static function init(Array $arr = [])
 	{
-		self::__construct($arr);
+		return new self($arr);
 	}
 
   /** 

@@ -23,6 +23,12 @@ class Strings
 		$this->salt = $salt;
 		$this->iv = $iv;
 	}
+
+	public static function init($alg, $salt, $iv)
+	{
+		return new self($alg, $salt, $iv);
+	}
+	
 	/** 
 	*  @param string data to be encrypted
 	*/
@@ -132,6 +138,43 @@ class Strings
     		return true;
     	}
     	return false;
+	}
+	
+	/**
+     * Checks if a string matches a pattern
+     *
+     * @param string $str
+     * @param string $pattern
+     * @return bool
+    */
+    public function match_pattern(string $str, string $pattern): bool
+    {
+    	if ( preg_match($pattern, $str ) === true ) {
+			return true;
+		}
+    	return false;
+	}
+	
+	/**
+     * Returns upper case
+     *
+     * @param string $str
+     * @return string
+    */
+    public function toUpper(string $str): string
+    {
+    	return mb_strtoupper($str);
+    }
+	
+	/**
+     * Returns lower case
+     *
+     * @param string $str
+     * @return string
+    */
+    public function toLower(string $str): string
+    {
+    	return mb_strtolower($str);
     }
 
 	/**
@@ -173,7 +216,7 @@ class Strings
 	 * @return string
 	 */
 	final static public function rand($len = 0){
-		$chars = 'qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPZXCVBNMLKJHGFDSA';
+		$chars = 'qwertyuiopasdfghjklzxcvbnm_-1234567890QWERTYUIOPZXCVBNMLKJHGFDSA';
 		return substr(str_shuffle(($chars)), 0, (($len == 0) ? random_int(6, 64) : $len) );
 	}
 

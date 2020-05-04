@@ -25,6 +25,11 @@ class Validation
 		$this->source = $source;
 	}
 
+	public static function init($source)
+	{
+		return new self($source);
+	}
+
 	public function valid()
 	{
 		return $this->_passed;
