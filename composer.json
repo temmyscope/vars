@@ -2,7 +2,7 @@
     "name": "sevens/vars",
     "description": "Simple Variable library Package For Encoding and Manipulating Strings and Arrays.",
     "type": "library",
-    "version": "v1.1.0",
+    "version": "v1.2.0",
     "license": "MIT",
     "minimum-stability": "dev",
     "config": {
