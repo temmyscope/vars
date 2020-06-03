@@ -3,18 +3,24 @@ Simple Variable library Package For Encoding and Manipulating Strings and Arrays
 
 => SevenVars is developed by Elisha Temiloluwa a.k.a TemmyScope	
 
-The Arrays library of the SevenVars Package implements the in-built spl countable interface and provides you a plethora of methods to manipulate a level II deep array, i.e. an array of arrays.
+The Arrays library of the SevenVars Package implements the in-built spl countable, ArrayAccess & Serializable interface(s) and provides you a plethora of methods to manipulate a level II deep array, i.e. an array of arrays.
 
-Please Note that version 1.1.0 removes the Encoder class; all its methods are now part of the Strings Class
+
+You may have to check the phpdoc parts of the code as to see or have a closer look of how each of the methods work.
 
 Seven\Vars\Arrays HOW-TO
 
 ```bash
-=>apply(Callable $fn, $to, ...$_keys): it applies a function to a certain key or keys and stores it on the 'to' key.
+=>apply(Callable $fn, $to, ...$_keys): it applies a function to a certain key or keys and stores it on the $to key.
 
 =>extract_*() for extracting arrays that contain certain key(s) or values
 
 =>exclude_*() for excluding arrays that contain certain key(s) or values
+
+=>get/serialize/unserialize/returnJson/returnObjects for returning the array at its current state using the methods specified in the name
+
+
+=>
 ```
 
 # use case and sample array type
@@ -46,3 +52,10 @@ var_dump( $class->sort('age')->return() );
 var_dump( $class->down_sort('age')->return() );
 
 ```
+
+The Strings library of the SevenVars Package built for manipulating strings.
+
+Please Note that since version 1.1.0, the Encoder class has been removed; all its methods are now part of the Strings Class
+
+
+The Validation library of the SevenVars Package built for validating the values in Arrays with entries using their entries/keys such as $_POST, $_GET etc.

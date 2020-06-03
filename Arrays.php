@@ -1,7 +1,10 @@
 <?php
 Namespace Seven\Vars;
 
+use Seven\Vars\Strings;
 use \Countable;
+use \Serializable;
+use \ArrayAccess;
 
 /**
  * @author Elisha Temiloluwa a.k.a TemmyScope (temmyscope@protonmail.com)
@@ -9,25 +12,45 @@ use \Countable;
  *
 */
 
-class Arrays Implements Countable
+class Arrays Implements Countable, Serializable, ArrayAccess
 {
-	/**
-	*@property var
-	*/
-	protected $var = [];
+  /**
+  *@property var
+  */
+  protected $var = [];
 
   /**
    * @param Array $arr is an array of arrays i.e. 2 levels deep array
   **/
   public function __construct(Array $arr = [])
-	{
-		$this->var = $arr;
+  {
+    $this->var = $arr;
   }
   
   public static function init(Array $arr = [])
-	{
-		return new self($arr);
-	}
+  {
+    return new self($arr);
+  }
+
+  public function offsetSet($offset, $value) {
+    if (is_null($offset)) {
+        $this->var[] = $value;
+    } else {
+        $this->var[$offset] = $value;
+    }
+  }
+
+  public function offsetExists($offset) {
+    return isset($this->var[$offset]);
+  }
+
+  public function offsetUnset($offset) {
+    unset($this->var[$offset]);
+  }
+
+  public function offsetGet($offset){
+    return isset($this->var[$offset]) ? $this->var[$offset] : null;
+  }
 
   /** 
    * Adds an array to the existing one
@@ -42,13 +65,29 @@ class Arrays Implements Countable
 
   /** 
    * Adds multiple arrays to the existing one by looping through
-   * @param [] vars
+   * @param array[] $var
    * @return Arrays $this
   */
   public function add_each(Array $var)
   {
     foreach ($var as $key => $value) {
       $this->var[] = $value;
+    }
+    return $this;
+  }
+
+  /** 
+   * Adds each key and value to each array
+   * @param [] $var
+   * @example [ 'key' => 'value', 'another_key' => 'another_value'];
+   * @return Arrays $this
+  */
+  public function add_to_each(Array $k_v): Arrays
+  {
+    foreach ($this->var as $key => &$value) {
+      foreach ($k_v as $k => $v) {
+        $value[$k] = $v; 
+      }
     }
     return $this;
   }
@@ -155,8 +194,8 @@ class Arrays Implements Countable
   * @param string $to
   * @param variadic $_keys
   */
-	public function apply(Callable $fn, $to, ...$_keys): Arrays
-	{
+  public function apply(Callable $fn, $to, ...$_keys): Arrays
+  {
     foreach($this->var as $key => &$value){
       $params = [];
       foreach ($_keys as $k => $v) {
@@ -165,23 +204,93 @@ class Arrays Implements Countable
       $value[$to] = call_user_func_array($fn, $params);
     }
     return $this;
-	}
+  }
 
-    /** 
+  /**
+  * Multi-Apply a closure | method | function on certain keys and store result in the $to key
+  * @param []Callable (array | Closure) $fn
+  * @param []string $tos
+  * @param []array $array_of_keys 
+  * @return Arrays
+  */
+  public function multi_apply(Array $callables, Array $tos, Array $array_of_keys): Arrays
+  {
+    foreach ($this->var as $key => &$value) {
+      foreach ($callables as $k => $callable) {
+        $current = $array_of_keys[$k];
+        $params = [];
+        foreach ($current as $index => $param_key) {
+          $params[] = $value[$param_key];
+        }
+        $value[$tos[$k]]  = call_user_func_array($callable, $params);
+      }
+    }
+    return $this;
+  }
+
+  /**
+  * sets a new value for each of the arrays using each of the key -> value pair passed,
+  * if an index is passed, only the key at that array index will be changed
+  * @param [] param ['key' => 'value']
+  * @param int|null index
+  * @return $this
+  */
+  public function set(array $param, $index = null): Arrays{
+    if( ctype_digit($index) ){
+      foreach ($param as $k => $v) {
+        $this->var[$index][$k] = $v;  
+      }
+    }else{
+      foreach ($this->var as $key => &$value) {
+        foreach ($param as $k => $v) {
+          $value[$k] = $v;
+        }
+      }
+    }
+    return $this;
+  }
+
+  /**
+  * renames a key in each of the arrays using each of the key -> value pair passed,
+  * if an index is passed, only the key at that array index will be changed
+  * @param [] k_v 
+  * @example ['old_key' => 'new_key']
+  * @param int|null index
+  * @return $this
+  */
+  public function rename(array $k_v, $index = null): Arrays
+  {
+    if( is_int($index) ){
+      foreach ($k_v as $k => $v) {
+        $this->var[$index][$v] = $this->var[$index][$k];
+        unset($this->var[$index][$k]);
+      }
+    }else{
+      foreach ($this->var as $key => &$value) {
+        foreach ($k_v as $k => $v) {
+          $value[$v] = $value[$k];
+          unset($value[$k]);
+        }
+      }
+    }
+    return $this;
+  }
+
+  /** 
    * merge values of multiple keys of an array into a single sub-array of that array which iis part of the larger Arrays
    * @param array keys 
    * @param string new_name
    * @return Arrays $this
   */  
   public function merge(array $keys, string $new_name){
-		foreach($this->var as $k => &$value){
-			$value[$new_name] = [];
-			foreach ($keys as $key) {
-				$value[$new_name][] = $value[$key];
-			}
-		}
-		return $this;
-	}
+    foreach($this->var as $k => &$value){
+      $value[$new_name] = [];
+      foreach ($keys as $key) {
+        $value[$new_name][] = $value[$key];
+      }
+    }
+    return $this;
+  }
 
   /** 
    * concatenates values of a particular key of multiple arrays using the passed separator and saving it on the new name
@@ -206,47 +315,47 @@ class Arrays Implements Countable
    * Extracts all the arrays containing the passed key
    * @return Arrays $this
   */
-	public function extract_by_key($key)
-	{
-		$new = [];
-		foreach($this->var as $k => $value){
-  		if(array_key_exists( $key, $value )){
+  public function extract_by_key($key)
+  {
+    $new = [];
+    foreach($this->var as $k => $value){
+      if(array_key_exists( $key, $value )){
         $new[] = $value;
-		  }
-	  }
+      }
+    }
     $this->var = $new;
     return $this;
-	}
+  }
 
   /** 
    * Extracts from all the arrays, if it contains the passed key
    * @return Arrays $this
   */
-	public function extract_key($key)
-	{
+  public function extract_key($key)
+  {
     $new = [];
-		foreach ($this->var as $k => $v) {
-			if ( array_key_exists($key, $v) ) {
-				$new[] = $v;
-			}
-		}
+    foreach ($this->var as $k => $v) {
+      if ( array_key_exists($key, $v) ) {
+        $new[] = $v;
+      }
+    }
     $this->var = $new;
     return $this;
-	}
+  }
 
   /** 
    * Excludes all array containing the passed key
    * @return Arrays $this
   */
-	public function exclude_by_key(string $key): Arrays
-	{
-		foreach($this->var as $k => &$v){
-			if(array_key_exists($key, $v)){
-				unset($this->var[$k]);
-			}
-	  }
+  public function exclude_by_key(string $key): Arrays
+  {
+    foreach($this->var as $k => &$v){
+      if(array_key_exists($key, $v)){
+        unset($this->var[$k]);
+      }
+    }
     return $this;
-	}
+  }
 
 
   /** 
@@ -254,28 +363,28 @@ class Arrays Implements Countable
   * @param $k_v = [ 'key' => 'value' ]
   * @return Arrays $this
   */
-	public function exclude_by(Array $k_v ): Arrays
-	{
-		foreach ( $this->var as $key => &$value ) {
+  public function exclude_by(Array $k_v ): Arrays
+  {
+    foreach ( $this->var as $key => &$value ) {
       foreach ($k_v as $k => $v){
         if ( array_key_exists($k, $value) && $value[$k] == $v ) { 
           unset( $this->var[$key] );
         break;
         }
       }
-		}
+    }
     return $this;
-	}
+  }
 
   /** 
   * Exclude keys from the initial array
   * @param variadic argument $keys
   * @return Arrays
   */
-	public function exclude_key(...$keys): Arrays
-	{
+  public function exclude_key(...$keys): Arrays
+  {
     return $this->hide(...$keys);
-	}
+  }
 
   public function hide(...$keys): Arrays
   {
@@ -309,6 +418,52 @@ class Arrays Implements Countable
   }
 
   /**
+  * picks out random arrays
+  * the set size has to be smaller than the total size of the array being processed
+  * @param in $size
+  * @return []
+  */
+  public function random(int $size): Array
+  {
+    $arr = $this->var;
+    $new = [];
+    shuffle($arr);
+    for ($i=0; $i<$size ; $i++) { 
+      $new[$i] = $arr[$i];
+    }
+    return $new;
+  }
+
+  /**
+  * search the value in a key if it contains a certain string
+  * @param string $key
+  * @param string $search
+  * @return []
+  */
+
+  public function search_in(string $key, $search): array
+  {
+    $sub = [];
+    foreach($this->var as $k => $v){
+      if ( Strings::contains( $v[$key], $search, true )  ) {
+        $sub[] = $v;
+      }
+    }
+    return $sub;  
+  }
+
+  /**
+  * search for each string of an array in a certain key
+  * @param string[] $search
+  * @param string $key
+  * @return []
+  */
+  public function search_for(array $search, string $key): array
+  {
+    return $this->search_in($key, $search); 
+  }
+
+  /**
   * Returns an array of arrays from the initial array containing any of the keys specified in the argument and their values
   * @param string['key' => 'value']
   * @return array
@@ -318,7 +473,7 @@ class Arrays Implements Countable
     $new = [];
     foreach ($this->var as $key => $value) {
       foreach ($k_v as $k => $v) {
-        if ( isset($value[$k]) && $value[$k] == $v ) {
+        if ( isset($value[$k]) && Strings::contains($value[$k], $v) ) {
           $new[] = $value;
           break;
         }
@@ -389,16 +544,16 @@ class Arrays Implements Countable
   }
 
   /**
-  * @method(s) returning serialized and unserialized data
+  * @method(s) serializing and unserializing data
   */
   public function serialize()
   {
     return serialize($this->var);
   }
 
-  public function unserialize()
+  public function unserialize($serialized)
   {
-    return unserialize($this->var);
+    $this->var = unserialize($serialized);
   }
 
   /**

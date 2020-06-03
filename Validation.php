@@ -35,6 +35,11 @@ class Validation
 		return $this->_passed;
 	}
 
+	public function passed()
+	{
+		return $this->_passed;
+	}
+
 	/**
 	 * 
 	 *
@@ -83,6 +88,10 @@ class Validation
 								$this->_errors[] = "{$display} must be exactly {$rule_value} characters.";
 							}
 							break;
+						case 'pattern':
+							if ( preg_match($rule_value, $value ) != true ) {
+								$this->_errors[] = "{$display} can only contain certain charaters.";
+							}
 						case 'matches':
 							if ($value != $source[$rule_value]){
 								$matchDisplay = $items[$rule_value]['display'];

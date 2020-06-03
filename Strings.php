@@ -33,16 +33,14 @@ class Strings
 	*  @param string data to be encrypted
 	*/
 	public function encrypt($data){
-		return @base64_encode( openssl_encrypt($data, $this->alg, $this->salt, $options = 0, $this->iv, $tag = NULL) );
-		//return base64_encode( openssl_encrypt($data, $this->alg, $this->salt) );
+		return @base64_encode(openssl_encrypt($data, $this->alg, $this->salt, $options = 0, $this->iv, $tag = NULL));
 	}
 
 	/** 
 	*  @param string data to be decrypted
 	*/
 	public function decrypt($encrypted){
-		return openssl_decrypt(  base64_decode($encrypted),  $this->alg, $this->salt, $options = 0, $this->iv, $tag = NULL );
-		//return openssl_decrypt( base64_decode($encrypted),  $this->alg, $this->salt);
+		return openssl_decrypt(base64_decode($encrypted), $this->alg, $this->salt, $options= 0, $this->iv, $tag= NULL);
 	}
 
  	/**
@@ -110,10 +108,8 @@ class Strings
         }
         $contain = is_array($contain) ? $contain : [$contain];
         foreach ($contain as $val) {
-            if ($ignoreCase) {
-                $val = mb_strtolower($val);
-            }
-            if ( mb_strpos($str, $val) >= 0 ) {
+        	$val = ($ignoreCase) ? mb_strtolower($val) : $val;
+            if ( mb_strpos($str, $val) !== false ) {
                 return true;
             }
         }
@@ -134,7 +130,7 @@ class Strings
     		$str1 = mb_strtolower($str1);
     		$str2 = mb_strtolower($str2);
     	}
-    	if ( $str1 == $str2 ) {
+    	if ( $str1 === $str2 ) {
     		return true;
     	}
     	return false;
@@ -147,12 +143,34 @@ class Strings
      * @param string $pattern
      * @return bool
     */
-    public function match_pattern(string $str, string $pattern): bool
+    public static function match_pattern(string $str, string $pattern): bool
     {
     	if ( preg_match($pattern, $str ) === true ) {
 			return true;
 		}
     	return false;
+	}
+
+	/**
+     * Checks if a string is safe : allowed to contain -,_ and alphanumeric characters
+     *
+     * @param string $str
+     * @return bool
+    */
+	public static function isVerySafe($str): bool
+	{
+		return self::match_pattern($str, "/[A-Za-z0-9_-]*/");
+	}
+
+	/**
+     * Checks if a string is safe : allowed to contain space,-,_ and alphanumeric characters
+     *
+     * @param string $str
+     * @return bool
+    */
+	public static function isSafe($str): bool
+	{
+		return self::match_pattern($str, "/[A-Za-z0-9_-]*/");
 	}
 	
 	/**
@@ -161,7 +179,7 @@ class Strings
      * @param string $str
      * @return string
     */
-    public function toUpper(string $str): string
+    public static function toUpper(string $str): string
     {
     	return mb_strtoupper($str);
     }
@@ -172,7 +190,7 @@ class Strings
      * @param string $str
      * @return string
     */
-    public function toLower(string $str): string
+    public static function toLower(string $str): string
     {
     	return mb_strtolower($str);
     }
@@ -244,13 +262,14 @@ class Strings
 	* @param int count
 	* @return reduced string to the specified length
 	*/
-	final static public function limit($var, $count = 2225)
+	final static public function limit($var, $count = 2225, $offset = 0)
 	{
-		return mb_substr($var, 0, $count);
+		return mb_substr($var, $offset, $count);
 	}
 
 	/**
 	* @param string str
+	* @return string unique_name
 	*/
 	final static public function get_unique_name(string $str): string
 	{
@@ -259,6 +278,7 @@ class Strings
 
 	/**
 	* @param str is the string that needs hashing
+	* @return string password_hash
 	*/
 	final static public function hash($str): string
 	{
@@ -268,6 +288,7 @@ class Strings
 	/**
 	* @param string str
 	* @param string hash
+	* @return bool
 	*/
 	final static public function verify_hash(string $str, string $hash): bool
 	{
@@ -277,6 +298,7 @@ class Strings
 	/**
 	* @param <string> Time string
 	* @param <string> TimeZone
+	* @return string date
 	*/
 
 	public static function time_from_string(string $str = 'now', $tz = 'UTC'): string{
