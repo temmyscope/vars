@@ -4,7 +4,7 @@ namespace Seven\Vars;
 /**
  * Validation
  *
- * @package Validator
+ * @package Vars
  * @author Elisha Temiloluwa <temmyscope@protonmail.com>
  **/
 class Validation
@@ -55,7 +55,7 @@ class Validation
 	public function rules(Array $items): Validation
 	{
 		foreach($items as $item => $rules) {
-			$display = $rules['display'];
+			$display = $rules['display'] ?? $item;
 			array_shift($rules);
 			foreach ($rules as $rule => $rule_value) {
 				$value = $this->source[$item];
@@ -88,10 +88,6 @@ class Validation
 								$this->_errors[] = "{$display} must be exactly {$rule_value} characters.";
 							}
 							break;
-						case 'pattern':
-							if ( preg_match($rule_value, $value ) != true ) {
-								$this->_errors[] = "{$display} can only contain certain charaters.";
-							}
 						case 'matches':
 							if ($value != $source[$rule_value]){
 								$matchDisplay = $items[$rule_value]['display'];
@@ -136,7 +132,7 @@ class Validation
 							}
 							break;
 						case 'is_same_as':
-							if( $value !== $source[$rule_value] ){
+							if( $value !== $this->source[$rule_value] ){
 								$this->_errors[] = "{$display} must be the same value as {$rule_value}";
 							}
 							break;

@@ -58,4 +58,4 @@ The Strings library of the SevenVars Package built for manipulating strings.
 Please Note that since version 1.1.0, the Encoder class has been removed; all its methods are now part of the Strings Class
 
 
-The Validation library of the SevenVars Package built for validating the values in Arrays with entries using their entries/keys such as $_POST, $_GET etc.
+The Validation library of the SevenVars Package built for validating the values in Arrays (such as $_POST, $_GET) with entries using their entries/keys.

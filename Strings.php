@@ -94,6 +94,25 @@ class Strings
     }
 
     /**
+    * Extracts a string between two strings, the start string and the stop string
+    * @param string $full
+    * @param string $start
+    * @param string $stop
+    * @param bool $ignoreCase
+    * @return string
+    */
+    public function between($full, $start, $stop, bool $ignoreCase = true): string
+    {
+    	if ($ignoreCase) {
+    		$full = mb_strtolower($full); $start = mb_strtolower($start); $stop = mb_strtolower($stop);
+    	}
+    	$start_pos = strpos($full, $start);
+    	if($start_pos === false) ? return ""; 
+    	$start_pos += strlen($start); $length = strpos($full, $stop, $start_pos) - $start_pos;
+    	return mb_substr($full, $start_pos, $length);
+    }
+
+    /**
      * Checks if a string contains a specific string
      *
      * @param string $value
