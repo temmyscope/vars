@@ -60,7 +60,7 @@ class Validation
 			foreach ($rules as $rule => $rule_value) {
 				$value = $this->source[$item];
 				if ($rule === 'required' && empty($value)) {
-					$this->status('error', ["{$display} is required", $item]);
+					$this->_errors[] = "{$display} is required";
 				}elseif(!empty($value)){
 					switch((string) $rule){
 						case 'not_less_than':

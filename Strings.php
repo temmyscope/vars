@@ -107,7 +107,7 @@ class Strings
     		$full = mb_strtolower($full); $start = mb_strtolower($start); $stop = mb_strtolower($stop);
     	}
     	$start_pos = strpos($full, $start);
-    	if($start_pos === false) ? return ""; 
+    	if($start_pos === false) return ""; 
     	$start_pos += strlen($start); $length = strpos($full, $stop, $start_pos) - $start_pos;
     	return mb_substr($full, $start_pos, $length);
     }
@@ -178,7 +178,22 @@ class Strings
     */
 	public static function isVerySafe($str): bool
 	{
-		return self::match_pattern($str, "/[A-Za-z0-9_-]*/");
+		return self::match_pattern($str, "/[^A-Za-z0-9_-]/");
+	}
+
+	public static function isXSafe($str): bool
+	{
+		return self::match_pattern($str, "/[^A-Za-z0-9]/");
+	}
+
+	public static function makeSafe($str): string
+	{
+		return preg_replace("/[^A-Za-z0-9_-]/", "", $str);
+	}
+
+	public static function makeSpaceSafe($str): string
+	{
+		return preg_replace("/[^A-Za-z0-9_-\s]/", "", $str);
 	}
 
 	/**
@@ -189,7 +204,7 @@ class Strings
     */
 	public static function isSafe($str): bool
 	{
-		return self::match_pattern($str, "/[A-Za-z0-9_-]*/");
+		return self::match_pattern($str, "/[A-Za-z0-9_-]/");
 	}
 	
 	/**

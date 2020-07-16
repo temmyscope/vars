@@ -100,7 +100,7 @@ class Arrays Implements Countable, Serializable, ArrayAccess
   {
     array_pop($this->var);
     return $this;
-  }
+  } 
 
   /** 
    * Removes the last array from each array inside the existing one
@@ -311,6 +311,26 @@ class Arrays Implements Countable, Serializable, ArrayAccess
     return $this;
   }
 
+ /** 
+  * Extract key from the initial array using the key, value pair in the passed argument
+  * @param $k_v = [ 'key' => 'value' ]
+  * @return Arrays $this
+  */
+  public function extract_by(Array $k_v)
+  {
+    $new = [];
+    foreach ( $this->var as $key => &$value ) {
+      foreach ($k_v as $k => $v){
+        if ( array_key_exists($k, $value) && $value[$k] === $v ) {
+          $new[] = $value;
+        break;
+        }
+      }
+    }
+    $this->var = $new;
+    return $this;
+  }
+
   /** 
    * Extracts all the arrays containing the passed key
    * @return Arrays $this
@@ -329,18 +349,17 @@ class Arrays Implements Countable, Serializable, ArrayAccess
 
   /** 
    * Extracts from all the arrays, if it contains the passed key
-   * @return Arrays $this
+   * @return Array
   */
   public function extract_key($key)
   {
     $new = [];
     foreach ($this->var as $k => $v) {
       if ( array_key_exists($key, $v) ) {
-        $new[] = $v;
+        $new[] = $v[$key];
       }
     }
-    $this->var = $new;
-    return $this;
+    return $new;
   }
 
   /** 
