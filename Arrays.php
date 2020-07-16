@@ -94,7 +94,7 @@ class Arrays Implements Countable, Serializable, ArrayAccess
 
   /** 
    * Removes the last array from the existing one
-   * @return Arrays $this
+   * @return Arrays
   */
   public function pop(): Arrays
   {
@@ -572,7 +572,7 @@ class Arrays Implements Countable, Serializable, ArrayAccess
 
   public function unserialize($serialized)
   {
-    $this->var = unserialize($serialized);
+    return unserialize($serialized);
   }
 
   /**

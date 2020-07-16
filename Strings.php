@@ -204,7 +204,7 @@ class Strings
     */
 	public static function isSafe($str): bool
 	{
-		return self::match_pattern($str, "/[A-Za-z0-9_-]/");
+		return self::match_pattern($str, "/[A-Za-z0-9_-\s]/");
 	}
 	
 	/**
@@ -285,7 +285,7 @@ class Strings
 	 * Returns a very random string
 	 * @param len
 	 * @return string
-	 */
+	*/
 	public static function fixed_length_token(int $len): string
 	{
     	return base64_encode(openssl_random_pseudo_bytes($len));
