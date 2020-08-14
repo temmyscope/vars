@@ -206,6 +206,11 @@ class Arrays Implements Countable, Serializable, ArrayAccess
     return $this;
   }
 
+  public function map(Callable $fn, $to, ...$_keys): Arrays
+  {
+    return $this->apply($fn, $to, ...$_keys);
+  }
+
   /**
   * Multi-Apply a closure | method | function on certain keys and store result in the $to key
   * @param []Callable (array | Closure) $fn
@@ -515,6 +520,26 @@ class Arrays Implements Countable, Serializable, ArrayAccess
       $k[] = $this->var[$i];
     }
     return $k;
+  }
+
+  /**
+  * @return yielded data
+  */
+  public function yield()
+  {
+    foreach ($this->var as $key => $value) {
+      yield $value;
+    }
+  }
+
+  /**
+  * @return yielded data
+  */
+  public function enumerate()
+  {
+    foreach ($this->var as $key => $value) {
+      yield [$key, $value];
+    }
   }
 
   /**

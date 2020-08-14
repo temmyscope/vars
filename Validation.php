@@ -50,7 +50,8 @@ class Validation
 	 * $validate->rules([
 	 * 	'entry' => [ 'display' => 'entry', 'required' => true,  ]
 	 * ]);
-	 **/
+	 *
+	*/
 	
 	public function rules(Array $items): Validation
 	{

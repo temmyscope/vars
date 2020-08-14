@@ -6,6 +6,13 @@ Simple Variable library Package For Encoding and Manipulating Strings and Arrays
 The Arrays library of the SevenVars Package implements the in-built spl countable, ArrayAccess & Serializable interface(s) and provides you a plethora of methods to manipulate a level II deep array, i.e. an array of arrays.
 
 
+## Installation
+```bash
+composer require sevens/vars
+```
+
+
+
 You may have to check the phpdoc parts of the code as to see or have a closer look of how each of the methods work.
 
 Seven\Vars\Arrays HOW-TO
