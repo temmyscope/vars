@@ -11,10 +11,8 @@
         "sort-packages": true
     },
     "autoload": {
-        "classmap": {
-            "Seven\\Vars\\Strings": "Strings.php",
-            "Seven\\Vars\\Arrays": "Arrays.php",
-            "Seven\\Vars\\Validation": "Validation.php"
+        "psr-4": {
+            "Seven\\Vars\\": "src/"
         }
     },
     "require": {
@@ -30,5 +28,8 @@
     "keywords": [
         "encode", "encrypt", "decrypt",
         "array manipulator", "string"
-    ]
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "^9.4.2"
+    }
 }
