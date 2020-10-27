@@ -122,8 +122,7 @@ class Arrays implements ArrayAccess, Countable, Serializable
   */
     public function pop(): array
     {
-        $arr = array_pop($this->var);
-        return $arr;
+        return array_pop($this->var);
     }
 
   /**
@@ -145,8 +144,7 @@ class Arrays implements ArrayAccess, Countable, Serializable
   */
     public function shift(): array
     {
-        $arr[] = array_shift($this->var);
-        return $arr;
+        return  array_shift($this->var);
     }
 
 
@@ -180,13 +178,7 @@ class Arrays implements ArrayAccess, Countable, Serializable
 
     public function reverse(): Arrays
     {
-        $len= count($this->var);
-        foreach( range(0, $len>>1) as $i) { 
-            $temp = $this->var[$i];
-            $this->var[$i] = $this->var[$len-$i-1];
-            $this->var[$len-$i-1] = $temp;
-        }
-        return new Arrays($this->var);
+        return new Arrays( array_reverse($this->var));
     }
 
     public function upSort(string $key): Arrays

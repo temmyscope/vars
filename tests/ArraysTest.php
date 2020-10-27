@@ -80,15 +80,35 @@ class ArraysTest extends TestCase
 
         $this->assertEquals($this->arrays[4]['city'], $this->arrays->offsetGet(4)['city']);
 
+        $first = $this->arrays->offsetGet(0);
+        $shifted = $this->arrays->shift();
+
+        $this->assertEquals( $first, $shifted );
+        $this->assertEquals( $this->arrays->count(), count($this->arrays->shiftEach()) );
+
         $count = $this->arrays->count();
         $popped = $this->arrays->pop();
 
         $this->assertEquals( count($this->arrays), $count-1);
 
         $total = $this->arrays->popEach();
-        $this->assertEquals(0, count($total) );
+        $this->assertEquals(5, count($total) );
+    }
 
-        $this->assertEquals( $this->arrays[0], $ );
+    public function testPositionalMethods()
+    {
+        $this->assertEquals( $this->arrays[0], $this->arrays->first() );
+        $this->assertEquals( $this->arrays[3], $this->arrays->last() );
+
+        $reversed = $this->arrays->reverse()->return();
+        $this->assertEquals(27, $reversed[2]['age']);
+
+        $sorted = $this->arrays->sort('age')->return();
+        $this->assertEquals( 21, $sorted[0]['age']);
+
+        $sorted = $this->arrays->downSort('age')->return();
+        $this->assertEquals( 27, $sorted[0]['age']);
+
     }
     
 }
