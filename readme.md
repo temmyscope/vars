@@ -462,7 +462,7 @@ $validation = new Validation($data);
 
 $validation->rules([
 
-	#checks if a value was provided or not
+ #checks if a value was provided or not
  'name' => [ 'required' => true ],
 
  #checks if value is a valid email address
@@ -488,7 +488,7 @@ $validation->passed(): bool;
 ```
 
 	- Validation Errors
-***Returns an array containing the first encountered error***
+***Returns an array containing the first encountered error.<br>***
 ***Returns an empty array, if all the validation rules passed successfully***
 
 ```php

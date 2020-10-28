@@ -59,7 +59,6 @@ class Validation
     {
         foreach ($items as $item => $rules) {
             $display = $item;
-            array_shift($rules);
             foreach ($rules as $rule => $ruleValue) {
                 $value = $this->source[$item];
                 $method = $rule.'Validator';

@@ -27,6 +27,7 @@ class ValidationTest extends TestCase
         $this->assertTrue( $this->validation->passed() );
     }
 
+    /*
     public function testEmailAndUrlRules()
     {
         $this->validation->rules([
@@ -48,7 +49,7 @@ class ValidationTest extends TestCase
 
         $this->assertTrue( $this->validation->passed() );
     }
-/*
+
     public function testLengthRule()
     {
         $this->validation->rules([
@@ -61,7 +62,7 @@ class ValidationTest extends TestCase
     public function testGeneralRules()
     {
         $this->validation->rules([
-            'age' => [ 'same' => 21 ]
+            'age' => [ 'same' => 'email' ]
         ]);
 
         $this->assertTrue( $this->validation->passed() );
