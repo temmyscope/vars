@@ -323,7 +323,7 @@ $arrays->getObjects();
 ```php
 use Seven\Vars\Strings;
 
-$string = new Strings($alg='aes-256-cfb', $salt='a3M5w/bnPIrWs889BSQ==ZnM', $iv='uosL_7pM-5qU_c4S' );
+$string = new Strings($alg, $salt, $iv);
 
 $string->encrypt($data);
 
@@ -476,7 +476,7 @@ $validation->rules([
 
  #check if value is a number, then check if it is greater than 17 and less than 60
  'age' => [ 'is_numeric' => true, 'gt' => 17, 'lt' => '60']
- 
+
 ]);
 
 ```
