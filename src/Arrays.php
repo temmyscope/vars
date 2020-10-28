@@ -43,7 +43,7 @@ class Arrays implements ArrayAccess, Countable, Serializable
     * @param []object $arr
     */
 
-    public static function fromObjects(array $arr)
+    public static function safeInit(array $arr)
     {
         $newArray = [];
         foreach ($arr as $key => $value) {
@@ -73,7 +73,7 @@ class Arrays implements ArrayAccess, Countable, Serializable
 
     public function offsetGet($offset)
     {
-        return isset($this->var[$offset]) ? $this->var[$offset] : null;
+        return $this->var[$offset] ?? null;
     }
 
     /**
@@ -116,19 +116,21 @@ class Arrays implements ArrayAccess, Countable, Serializable
         return $this;
     }
 
-  /**
-   * Removes the last array from the existing one
-   * @return Arrays
-  */
+    /**
+    * Removes the last array from the existing one
+    * @return array
+    */
+
     public function pop(): array
     {
         return array_pop($this->var);
     }
 
-  /**
-   * Removes the last array from each array inside the existing one
-   * @return Arrays $this
-  */
+    /**
+    * Removes the last array from each array inside the existing one
+    * @return array
+    */
+    
     public function popEach(): array
     {
         $arr = [];
@@ -138,20 +140,22 @@ class Arrays implements ArrayAccess, Countable, Serializable
         return $arr;
     }
 
-  /**
-   * Removes the first array from the existing one
-   * @return Arrays $this
-  */
+    /**
+    * Removes the first array from the existing one and return it
+    * @return array
+    */
+    
     public function shift(): array
     {
         return  array_shift($this->var);
     }
 
 
-  /**
-   * Removes the first array from each array inside the existing one
-   * @return Arrays $this
-  */
+    /**
+    * Removes the first array from each array inside the existing one and returns it
+    * @return array
+    */
+    
     public function shiftEach(): array
     {
         $arr = [];
@@ -161,10 +165,11 @@ class Arrays implements ArrayAccess, Countable, Serializable
         return $arr;
     }
 
-  /**
-  * Sorts all arrays inside the main array by checking the 'natural' order of the passed key in eah of those arrays
-  * @return Arrays $this
-  */
+    /**
+    * Sorts all arrays inside the main array by checking the 'natural' order of the passed key in eah of those arrays
+    * @return Arrays $this
+    */
+    
     public function sort(string $key): Arrays
     {
         usort(
@@ -197,87 +202,59 @@ class Arrays implements ArrayAccess, Countable, Serializable
         return $this;
     }
 
-  /**
-   * Returns the last array
-   * @return Arrays $this
-  */
+    /**
+    * Returns the last array
+    * @return array
+    */
+    
     public function last(): array
     {
         return end($this->var);
     }
 
-  /**
-   * Returns the first array
-   * @return Arrays $this
-  */
+    /**
+    * Returns the first array
+    * @return array
+    */
+    
     public function first(): array
     {
         return $this->var[0];
     }
 
-  /**
-  * @method(s) for data modification
-  * START
-  */
-
-  /**
-  * Apply a closure | method | function on certain keys and store result in the $to key
-  * @param Callable (array | Closure) $fn
-  * @example [$object, method] OR function() use {}
-  * @param string $to
-  * @param variadic $_keys
-  */
-    public function apply(callable $fn, $to, ...$_keys): Arrays
+    /**
+    * Apply a closure | method | function on each array
+    * @method Arrays apply
+    * @param callable $fn : [] => must return array
+    * 
+    */
+    
+    public function apply(callable $fn): Arrays
     {
         foreach ($this->var as $key => &$value) {
-            $params = [];
-            foreach ($_keys as $k => $v) {
-                $params[] = $value[$v];
-            }
-            $value[$to] = call_user_func_array($fn, $params);
+            $value = call_user_func_array($fn, [&$value]);
         }
         return $this;
     }
 
-    public function map(callable $fn, $to, ...$_keys): Arrays
+    public function map(callable $fn): Arrays
     {
-        return $this->apply($fn, $to, ...$_keys);
+        return $this->apply($fn);
     }
 
-  /**
-  * Multi-Apply a closure | method | function on certain keys and store result in the $to key
-  * @param []Callable (array | Closure) $fn
-  * @param []string $tos
-  * @param []array $array_of_keys
-  * @return Arrays
-  */
-    public function multiApply(array $callables, array $tos, array $array_of_keys): Arrays
-    {
-        foreach ($this->var as $key => &$value) {
-            foreach ($callables as $k => $callable) {
-                    $current = $array_of_keys[$k];
-                    $params = [];
-                foreach ($current as $index => $param_key) {
-                    $params[] = $value[$param_key];
-                }
-                $value[$tos[$k]]  = call_user_func_array($callable, $params);
-            }
-        }
-        return $this;
-    }
+    /**
+    * sets a new value for each of the arrays using each of the key -> value pair passed,
+    * if an index is passed, only the key at that array index will be changed
+    * @param [] param ['key' => 'value']
+    * @param int|null index
+    * @return $this
+    */
 
-  /**
-  * sets a new value for each of the arrays using each of the key -> value pair passed,
-  * if an index is passed, only the key at that array index will be changed
-  * @param [] param ['key' => 'value']
-  * @param int|null index
-  * @return $this
-  */
     public function set(array $param, $index = null): Arrays
     {
         if (ctype_digit($index)) {
             foreach ($param as $k => $v) {
-                    $this->var[$index][$k] = $v;
+                $this->var[$index][$k] = $v;
             }
         } else {
             foreach ($this->var as $key => &$value) {
@@ -289,15 +266,16 @@ class Arrays implements ArrayAccess, Countable, Serializable
         return $this;
     }
 
-  /**
-  * renames a key in each of the arrays using each of the key -> value pair passed,
-  * if an index is passed, only the key at that array index will be changed
-  * @param [] k_v
-  * @example ['old_key' => 'new_key']
-  * @param int|null index
-  * @return $this
-  */
-    public function rename(array $k_v, $index = null): Arrays
+    /**
+    * renames a key in each of the arrays using each of the key -> value pair passed,
+    * if an index is passed, only the key at that array index will be changed
+    * @param [] k_v
+    * @example ['old_key' => 'new_key']
+    * @param int|null index
+    * @return $this
+    */
+
+    public function rename(array $k_v, ?int $index = null): Arrays
     {
         if (is_int($index)) {
             foreach ($k_v as $k => $v) {
@@ -315,13 +293,14 @@ class Arrays implements ArrayAccess, Countable, Serializable
         return $this;
     }
 
-  /**
-   * merge values of multiple keys of an array into a single sub-array of that array which iis part of the larger Arrays
-   * @param array keys
-   * @param string new_name
-   * @return Arrays $this
-  */
-    public function merge(array $keys, string $new_name)
+    /**
+    * merge values of multiple keys of an array into a single sub-array of that array which iis part of the larger Arrays
+    * @param array keys
+    * @param string new_name
+    * @return Arrays $this
+    */
+    
+    public function merge(array $keys, string $new_name): Arrays
     {
         foreach ($this->var as $k => &$value) {
             $value[$new_name] = [];
@@ -332,13 +311,14 @@ class Arrays implements ArrayAccess, Countable, Serializable
         return $this;
     }
 
-  /**
-   * concatenates values of a particular key of multiple arrays using the passed separator and saving it on the new name
-   * @param array keys
-   * @param string new_name
-   * @param string separator
-   * @return Arrays $this
-  */
+    /**
+    * concatenates values of a particular key of multiple arrays using the passed separator and saving it on the new name
+    * @param array keys
+    * @param string new_name
+    * @param string separator
+    * @return Arrays $this
+    */
+
     public function concat(array $keys, string $new_name, string $separator = "_"): Arrays
     {
         foreach ($this->var as $key => &$value) {
@@ -351,12 +331,13 @@ class Arrays implements ArrayAccess, Countable, Serializable
         return $this;
     }
 
- /**
-  * Extract key from the initial array using the key, value pair in the passed argument
-  * @param $k_v = [ 'key' => 'value' ]
-  * @return Arrays $this
-  */
-    public function extractBy(array $k_v)
+    /**
+    * Extract key from the initial array using the key, value pair in the passed argument
+    * @param $k_v = [ 'key' => 'value' ]
+    * @return Arrays $this
+    */
+    
+    public function extractBy(array $k_v): Arrays
     {
         $new = [];
         foreach ($this->var as $key => &$value) {
@@ -371,11 +352,12 @@ class Arrays implements ArrayAccess, Countable, Serializable
         return $this;
     }
 
-  /**
-   * Extracts all the arrays containing the passed key
-   * @return Arrays $this
-  */
-    public function extractByKey($key)
+    /**
+    * Extracts all the arrays containing the passed key
+    * @return Arrays $this
+    */
+    
+    public function extractByKey($key): Arrays
     {
         $new = [];
         foreach ($this->var as $k => $value) {
@@ -387,11 +369,12 @@ class Arrays implements ArrayAccess, Countable, Serializable
         return $this;
     }
 
-  /**
-   * Extracts from all the arrays, if it contains the passed key
-   * @return Array
-  */
-    public function extractKey($key)
+    /**
+    * Extracts from all the arrays, if it contains the passed key
+    * @return array
+    */
+    
+    public function extractKey($key): array
     {
         $new = [];
         foreach ($this->var as $k => $v) {
@@ -402,10 +385,11 @@ class Arrays implements ArrayAccess, Countable, Serializable
         return $new;
     }
 
-  /**
-   * Excludes all array containing the passed key
-   * @return Arrays $this
-  */
+    /**
+    * Excludes all array containing the passed key
+    * @return Arrays $this
+    */
+    
     public function excludeByKey(string $key): Arrays
     {
         foreach ($this->var as $k => &$v) {
@@ -417,11 +401,12 @@ class Arrays implements ArrayAccess, Countable, Serializable
     }
 
 
-  /**
-  * Exclude keys from the initial array using the key, value pair in the passed argument
-  * @param $k_v = [ 'key' => 'value' ]
-  * @return Arrays $this
-  */
+    /**
+    * Exclude keys from the initial array using the key, value pair in the passed argument
+    * @param $k_v = [ 'key' => 'value' ]
+    * @return Arrays $this
+    */
+
     public function excludeBy(array $k_v): Arrays
     {
         foreach ($this->var as $key => &$value) {
@@ -435,17 +420,13 @@ class Arrays implements ArrayAccess, Countable, Serializable
         return $this;
     }
 
-  /**
-  * Exclude keys from the initial array
-  * @param variadic argument $keys
-  * @return Arrays
-  */
-    public function excludeKey(...$keys): Arrays
-    {
-        return $this->hide(...$keys);
-    }
+    /**
+    * Exclude keys from the initial array
+    * @param variadic argument $keys
+    * @return Arrays
+    */
 
-    public function hide(...$keys): Arrays
+    public function excludeKey(...$keys): Arrays
     {
         foreach ($this->var as $key => &$value) {
             foreach ($keys as $k => $v) {
@@ -458,15 +439,12 @@ class Arrays implements ArrayAccess, Countable, Serializable
         return $this;
     }
 
-  /**
-  * @method (s) that operate and return an array immediately
-  */
+    /**
+    * Returns an array of arrays from the initial array containing any of the keys specified in the argument
+    * @param [] string
+    * @return array
+    */
 
-  /**
-  * Returns an array of arrays from the initial array containing any of the keys specified in the argument
-  * @param string['key' => 'value']
-  * @return array
-  */
     public function whiteList(array $whitelist): array
     {
         $new = [];
@@ -476,12 +454,13 @@ class Arrays implements ArrayAccess, Countable, Serializable
         return $new;
     }
 
-  /**
-  * picks out random arrays
-  * the set size has to be smaller than the total size of the array being processed
-  * @param in $size
-  * @return []
-  */
+    /**
+    * picks out random arrays
+    * the set size has to be smaller than the total size of the array being processed
+    * @param in $size
+    * @return []
+    */
+
     public function random(int $size): array
     {
         $arr = $this->var;
@@ -493,14 +472,14 @@ class Arrays implements ArrayAccess, Countable, Serializable
         return $new;
     }
 
-  /**
-  * search the value in a key if it contains a certain string
-  * @param string $key
-  * @param string $search
-  * @return []
-  */
+    /**
+    * search the value in a key if it contains a certain string
+    * @param mixed $search
+    * @param string $key
+    * @return []
+    */
 
-    public function searchIn(string $key, $search): array
+    public function searchFor(mixed $search, string $key): array
     {
         $sub = [];
         foreach ($this->var as $k => $v) {
@@ -511,23 +490,14 @@ class Arrays implements ArrayAccess, Countable, Serializable
         return $sub;
     }
 
-  /**
-  * search for each string of an array in a certain key
-  * @param string[] $search
-  * @param string $key
-  * @return []
-  */
-    public function searchFor(array $search, string $key): array
-    {
-        return $this->search_in($key, $search);
-    }
+    /**
+    * Returns an array of arrays from the initial array containing any of the keys 
+    * specified in the argument and their values
+    * @param string['key' => 'value']
+    * @return array
+    */
 
-  /**
-  * Returns an array of arrays from the initial array containing any of the keys specified in the argument and their values
-  * @param string['key' => 'value']
-  * @return array
-  */
-    public function search(array $k_v)
+    public function search(array $k_v): array
     {
         $new = [];
         foreach ($this->var as $key => $value) {
@@ -541,13 +511,14 @@ class Arrays implements ArrayAccess, Countable, Serializable
         return $new;
     }
 
-  /**
-  * Returns an array of the size and start position specified
-  * @param int count
-  * @param int start
-  * @return array
-  */
-    public function trim(int $count, int $start = 0)
+    /**
+    * Returns an array of the size and start position specified
+    * @param int count
+    * @param int start
+    * @return array
+    */
+
+    public function trim(int $count, int $start = 0): array
     {
         $k = [];
         $end = ($start + $count) - 1;
@@ -557,98 +528,87 @@ class Arrays implements ArrayAccess, Countable, Serializable
         return $k;
     }
 
-  /**
-  * @return yielded data
-  */
-    public function yield()
-    {
-        foreach ($this->var as $key => $value) {
-            yield $value;
-        }
-    }
+    /**
+    * @return Generator[]
+    */
 
-  /**
-  * @return yielded data
-  */
-    public function enumerate()
+    public function &enumerate()
     {
-        foreach ($this->var as $key => $value) {
+        foreach ($this->var as $key => &$value) {
             yield [$key, $value];
         }
     }
 
-  /**
-  * @method(s) that return current status of data
-  * START
-  */
-
-  /**
-  * Returns the count of arrays
-  * @return int
-  */
+    /**
+    * Returns the count of arrays
+    * @return int
+    */
 
     public function count(): int
     {
         return count($this->var);
     }
 
-  /**
-  * checks if the key exists in any of the internal arrays
-  * @return bool
-  */
+    /**
+    * checks if the key exists in at least one of the arrays
+    * @return bool
+    */
+
     public function exists(string $k): bool
     {
         foreach ($this->var as $key) {
             if (isset($key[$k])) {
-                    return true;
+                return true;
             }
         }
         return false;
     }
 
-  /**
-  * Returns current state of array
-  * @method(s) for retrieval of data
-  * @return Array
-  */
+    /**
+    * Returns current state of array
+    * @method(s) for retrieval of data
+    * @return Array
+    */
 
     public function get(): array
     {
         return $this->var;
     }
 
-    public function return()
-    {
-        return $this->var;
-    }
+    /**
+    * @method serailize for serializing and unserializing data
+    * @return string 
+    */
 
-  /**
-  * @method(s) serializing and unserializing data
-  */
     public function serialize()
     {
         return serialize($this->var);
     }
+
+    /**
+    * @method unserailize for unserializing data
+    * @param string
+    * @return mixed
+    */
 
     public function unSerialize($serialized)
     {
         return unserialize($serialized);
     }
 
-  /**
-  * @method(s) returning json_encoded data
-  */
-    public function returnJson()
+    /**
+    * @method returning json_encoded data
+    */
+
+    public function getJson()
     {
         return json_encode($this->var);
     }
 
-    public function getJson()
-    {
-        $this->returnJson();
-    }
-
-    public function returnObjects()
+    /**
+    * @method returning array of objects
+    */
+    public function getObjects()
     {
         return $this->objectify($this->var);
     }

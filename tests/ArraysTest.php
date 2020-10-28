@@ -100,15 +100,30 @@ class ArraysTest extends TestCase
         $this->assertEquals( $this->arrays[0], $this->arrays->first() );
         $this->assertEquals( $this->arrays[3], $this->arrays->last() );
 
-        $reversed = $this->arrays->reverse()->return();
+        $reversed = $this->arrays->reverse()->get();
         $this->assertEquals(27, $reversed[2]['age']);
 
-        $sorted = $this->arrays->sort('age')->return();
+        $sorted = $this->arrays->sort('age')->get();
         $this->assertEquals( 21, $sorted[0]['age']);
 
-        $sorted = $this->arrays->downSort('age')->return();
+        $sorted = $this->arrays->downSort('age')->get();
         $this->assertEquals( 27, $sorted[0]['age']);
 
+    }
+
+    public function testModifierMethods()
+    {
+        $ref = $this->arrays->apply(function($array): array{
+            $array['age'] = $array['age'] * 2;
+            return $array;
+        });
+        $this->assertSame($this->arrays , $ref);
+
+        $arrays = $this->arrays->set(['age' => 50]);
+        $this->assertEquals(50, $this->arrays[0]['age'], 0);
+
+        $arrays = $this->arrays->rename(['nickname' => 'nick']);
+        $this->assertEquals('dick & harry', $this->arrays[0]['nick']);
     }
     
 }
