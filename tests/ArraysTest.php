@@ -119,11 +119,17 @@ class ArraysTest extends TestCase
         });
         $this->assertSame($this->arrays , $ref);
 
-        $arrays = $this->arrays->set(['age' => 50]);
+        $this->arrays->set(['age' => 50]);
         $this->assertEquals(50, $this->arrays[0]['age'], 0);
 
-        $arrays = $this->arrays->rename(['nickname' => 'nick']);
+        $this->arrays->rename(['nickname' => 'nick']);
         $this->assertEquals('dick & harry', $this->arrays[0]['nick']);
+
+        $this->arrays->concat(['nick', 'age'], 'nickage', ', ');
+        $data = explode(', ', $this->arrays[0]['nickage']);
+        $this->assertTrue( is_array($data) );
+
+        $this->assertTrue( in_array(50, $data) );
     }
     
 }

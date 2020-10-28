@@ -189,13 +189,6 @@ $arrays->set(array $param, ?int $index = null): Arrays;
 $arrays->rename(array $k_v, ?int $index = null): Arrays;
 ```
 
-	- merge values of multiple keys of an array into a single sub-array of that array 
-	which is part of the larger Arrays
-
-```php
-$arrays->merge(array $keys, string $new_name): Arrays;
-```
-
 	- concatenates values of a particular key of multiple arrays using the passed 
 	separator and saving it on the new name
 
@@ -321,11 +314,14 @@ $arrays->getObjects();
 ### Usage: Seven\Vars\Strings HOW-TO
 ##
 
+***Most methods of this class are static, hence do not require initialization***
+***Non static methods in this class are used for encoding, encryption and decryption***
 
+	- 
 
 
 ### Usage: Seven\Vars\Validation HOW-TO
 ##
 
-***In order for the library to generate expected outputs, always initialize with a valid array***
+***In order for the library to generate expected outputs, always initialize with a valid array.***
 ***The library comes in handy when dealing with arrays such as $_POST, $_GET etc.***

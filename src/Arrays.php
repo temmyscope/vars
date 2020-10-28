@@ -294,24 +294,6 @@ class Arrays implements ArrayAccess, Countable, Serializable
     }
 
     /**
-    * merge values of multiple keys of an array into a single sub-array of that array which iis part of the larger Arrays
-    * @param array keys
-    * @param string new_name
-    * @return Arrays $this
-    */
-    
-    public function merge(array $keys, string $new_name): Arrays
-    {
-        foreach ($this->var as $k => &$value) {
-            $value[$new_name] = [];
-            foreach ($keys as $key) {
-                    $value[$new_name][] = $value[$key];
-            }
-        }
-        return $this;
-    }
-
-    /**
     * concatenates values of a particular key of multiple arrays using the passed separator and saving it on the new name
     * @param array keys
     * @param string new_name
@@ -319,7 +301,7 @@ class Arrays implements ArrayAccess, Countable, Serializable
     * @return Arrays $this
     */
 
-    public function concat(array $keys, string $new_name, string $separator = "_"): Arrays
+    public function concat(array $keys, string $new_name, string $separator = ","): Arrays
     {
         foreach ($this->var as $key => &$value) {
             $value[$new_name] = "";
@@ -464,10 +446,10 @@ class Arrays implements ArrayAccess, Countable, Serializable
     public function random(int $size): array
     {
         $arr = $this->var;
-        $new = [];
         shuffle($arr);
-        for ($i = 0; $i < $size; $i++) {
-            $new[$i] = $arr[$i];
+        $new = [];
+        foreach (range(0, $size-1) as $key) {
+            $new[$key] = $arr[$key]; 
         }
         return $new;
     }
