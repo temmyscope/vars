@@ -50,7 +50,7 @@ class Validation
      * @example
      * $validate = new Validate(Request $request);
      * $validate->rules([
-     *  'entry' => [ 'display' => 'entry', 'required' => true,  ]
+     *  'entry' => [ 'required' => true, ]
      * ]);
      *
     */
@@ -58,11 +58,12 @@ class Validation
     public function rules(array $items): Validation
     {
         foreach ($items as $item => $rules) {
-            $display = $rules['display'] ?? $item;
+            $display = $item;
             array_shift($rules);
-            foreach ($rules as $rule => $rule_value) {
+            foreach ($rules as $rule => $ruleValue) {
                 $value = $this->source[$item];
-                if( $this->$rule.'Validator'($value, $rule_value, $display) === false){
+                $method = $rule.'Validator';
+                if( $this->$method($value, $ruleValue, $display) === false){
                     return $this;
                 }
             }
@@ -79,6 +80,7 @@ class Validation
     /**
     * @method bool gtValidator tests for greater than
     */
+
     protected function requiredValidator($value, $ruleValue, $display): bool
     {
         if (empty($value)) {
@@ -89,8 +91,9 @@ class Validation
     }
 
     /**
-    * @method bool gtValidator tests for greater than
+    * @method bool emailValidator tests for valid email
     */
+
     protected function emailValidator($value, $ruleValue, $display): bool
     {
         if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
@@ -113,12 +116,12 @@ class Validation
     }
 
     /**
-    * @method bool ltValidator tests for greater than
+    * @method bool ltValidator tests for lesser than
     */
     protected function ltValidator($value, $ruleValue, $display): bool
     {
-        if ((int)$value > $rule_value) {
-            $this->_errors[] = "{$display} can not be greater than {$rule_value} characters.";
+        if ((int)$value > $ruleValue) {
+            $this->_errors[] = "{$display} can not be greater than {$ruleValue} characters.";
             return false;
         }
         return true;
@@ -129,64 +132,61 @@ class Validation
     */
     protected function gtValidator($value, $ruleValue, $display): bool
     {
-        if ((int)$value < $rule_value) {
-            $this->_errors[] = "{$display} can not be less than {$rule_value} characters.";
+        if ((int)$value < $ruleValue) {
+            $this->_errors[] = "{$display} can not be less than {$ruleValue} characters.";
             return false;
         }
         return true;
     }
 
     /**
-    * @method bool minValidator tests for greater than
+    * @method bool minValidator tests for minimum length
     */
     protected function minValidator($value, $ruleValue, $display): bool
     {
-        if (mb_strlen($value) < $rule_value) {
-            $this->_errors[] = "{$display} must be a minimum of {$rule_value} characters.";
+        if (mb_strlen($value) < $ruleValue) {
+            $this->_errors[] = "{$display} must be a minimum of {$ruleValue} characters.";
             return false;
         }
         return true;
     }
 
     /**
-    * @method bool maxValidator tests for greater than
+    * @method bool maxValidator tests for maximum length
     */
     protected function maxValidator($value, $ruleValue, $display): bool
     {
-        if (mb_strlen($value) > $rule_value) {
-            $this->_errors[] = "{$display} must be a maximum of {$rule_value} characters.";
+        if (mb_strlen($value) > $ruleValue) {
+            $this->_errors[] = "{$display} must be a maximum of {$ruleValue} characters.";
             return false;
         }
         return true;
     }
 
     /**
-    * @method bool lenValidator tests for greater than
+    * @method bool lenValidator tests for exact length
     */
     protected function lenValidator($value, $ruleValue, $display): bool
     {
-        if (mb_strlen($value) !== $rule_value) {
-            $this->_errors[] = "{$display} must be exactly {$rule_value} characters.";
+        if (mb_strlen($value) !== $ruleValue) {
+            $this->_errors[] = "{$display} must be exactly {$ruleValue} characters.";
             return false;
         }
         return true;
     }
 
     /**
-    * @method bool matchValidator tests for greater than
+    * @method bool matchValidator matches a string using regular expression
     */
     protected function matchValidator($value, $ruleValue, $display): bool
     {
-        if ( !Strings::matchPattern($value, $ruleValue) ) {
+        if ( !Strings::matchesPattern($value, $ruleValue) ) {
             $this->_errors[] = "{$display} does not match the given pattern.";
             return false;
         }
         return true;
     }
 
-    /**
-    * @method bool numericValidator tests for greater than
-    */
     protected function numericValidator($value, $ruleValue, $display): bool
     {
         if (!is_numeric($value)) {
@@ -200,7 +200,9 @@ class Validation
     {
         if (!ctype_alnum($value)) {
             $this->_errors[] = "{$display} can only be alphabeths and or numbers.";
+            return false;
         }
+        return true;
     }
 
     protected function alphaValidator($value, $ruleValue, $display): bool
@@ -214,19 +216,21 @@ class Validation
 
     protected function oneOfValidator($value, $ruleValue, $display): bool
     {
-        if (is_array($rule_value) && (!in_array($value, $rule_value))) {
+        if (is_array($ruleValue) && (!in_array($value, $ruleValue))) {
             $this->_errors[] = "{$display} can only be one of the given options";
+            return false;
         }
+        return true;
     }
 
     protected function notValidator($value, $ruleValue, $display): bool
     {
-        if (is_array($rule_value) && in_array($value, $rule_value)) {
-            $this->_errors[] = "{$display} can not be any of :" . implode(', ', $rule_value);
+        if (is_array($ruleValue) && in_array($value, $ruleValue)) {
+            $this->_errors[] = "{$display} can not be any of :" . implode(', ', $ruleValue);
             return false;
         }
         if($value == $ruleValue){
-            $this->_errors[] = "{$display} can not be {$rule_value}";
+            $this->_errors[] = "{$display} can not be {$ruleValue}";
             return false;
         }
         return true;
@@ -234,8 +238,8 @@ class Validation
 
     protected function isValidator($value, $ruleValue, $display): bool
     {
-        if ($value !== $rule_value['value']) {
-            $this->_errors[] = "{$display} must be the same value as {$rule_value['display']}";
+        if ($value !== $ruleValue['value']) {
+            $this->_errors[] = "{$display} must be the same value as {$ruleValue['display']}";
             return false;
         }
         return true;
@@ -243,8 +247,8 @@ class Validation
 
     protected function sameValidator($value, $ruleValue, $display): bool
     {
-        if ($value !== $this->source[$rule_value]) {
-            $this->_errors[] = "{$display} must be the same value as {$rule_value}";
+        if ($value !== $this->source[$ruleValue]) {
+            $this->_errors[] = "{$display} must be the same value as {$ruleValue}";
             return false;
         }
         return true;

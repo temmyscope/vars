@@ -47,7 +47,7 @@ class Strings
         return openssl_decrypt(base64_decode($encrypted), $this->alg, $this->salt, $options = 0, $this->iv, $tag = null);
     }
 
-        /**
+    /**
      * Checks if a string starts with a specific string
      *
      * @param string $value
@@ -172,7 +172,7 @@ class Strings
      * @param string $pattern
      * @return bool
     */
-    public static function matchPattern(string $str, string $pattern): bool
+    public static function matchesPattern(string $str, string $pattern): bool
     {
         if (preg_match($pattern, $str)) {
             return true;
@@ -188,12 +188,12 @@ class Strings
     */
     public static function isVerySafe($str): bool
     {
-        return self::matchPattern($str, "/^[A-Za-z0-9_-]/u");
+        return self::matchesPattern($str, "/^[A-Za-z0-9_-]/u");
     }
 
     public static function isXSafe($str): bool
     {
-        return self::matchPattern($str, "/^[A-Za-z0-9]/u");
+        return self::matchesPattern($str, "/^[A-Za-z0-9]/u");
     }
 
     public static function makeSafe($str): string
@@ -214,7 +214,7 @@ class Strings
     */
     public static function isSafe($str): bool
     {
-        return self::matchPattern($str, "/^[A-Za-z0-9_-\s]/u");
+        return self::matchesPattern($str, "/^[A-Za-z0-9_-\s]/u");
     }
 
     /**

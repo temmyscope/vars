@@ -317,11 +317,180 @@ $arrays->getObjects();
 ***Most methods of this class are static, hence do not require initialization***
 ***Non static methods in this class are used for encoding, encryption and decryption***
 
-	- 
+	- Initialization & Usage: If you'd be using the encryption & decryption feature, It's essential
+	you construct the object passing necessary variables
 
+```php
+use Seven\Vars\Strings;
+
+$string = new Strings($alg='aes-256-cfb', $salt='a3M5w/bnPIrWs889BSQ==ZnM', $iv='uosL_7pM-5qU_c4S' );
+
+$string->encrypt($data);
+
+$string->decrypt($encryptedData);
+
+```
+
+	- Check for the position of a string in another string
+
+```php
+/**
+ * Checks if a string ends with a specific string
+ *
+ * @param string $value
+ * @param string|string[] $end
+ * @param bool $ignoreCase
+ * @return bool
+*/
+public static function endsWith(string $value, $end, bool $ignoreCase = false): bool
+
+/**
+* Checks if a string starts with a specific string
+*
+* @param string $value
+* @param string|string[] $start
+* @param bool $ignoreCase
+* @return bool
+*/
+public static function startsWith(string $value, $start, bool $ignoreCase = false): bool
+
+
+/**
+* Extracts a string from between two strings, the start string and the stop string
+* @param string $full
+* @param string $start
+* @param string $stop
+* @param bool $ignoreCase
+* @return string
+*/
+public function between($full, $start, $stop, bool $ignoreCase = true): string
+
+
+/**
+* Checks if a string contains a specific string
+*
+* @param string $value
+* @param string|array $contain
+* @param bool $ignoreCase
+* @return bool
+*/
+public static function contains(string $str, $contain, bool $ignoreCase = false): bool
+
+
+/**
+* Checks if a string matches a pattern
+*
+* @param string $str
+* @param string $pattern => regular expression pattern
+* @return bool
+*/
+public static function matchesPattern(string $str, string $pattern): bool
+
+
+```
+
+	- For generating truly random strings
+
+```php
+
+
+/**
+* Returns a very random string over 32 characters in length
+* @return string
+*/
+public static function randToken(): string
+
+/**
+* Returns a very random string of fixed length
+* @param len
+* @return string
+*/
+public static function fixedLengthToken(int $len): string
+
+/**
+* trims string to specified length starting from the specified offset
+* It is multibyte
+* @param string var
+* @param int count
+* @return reduced string to the specified length
+*/
+final public static function limit($var, $count = 2225, $offset = 0)
+
+/**
+* Returns a random that with very high entropy due to the specified string
+* will never return two equal strings 
+* @param string str
+* @return string unique_name
+*/
+final public static function uniqueId(string $str): string
+
+```
+
+	- Several other methods to format, remove and fix HTML tags; generate time From string etc.
 
 ### Usage: Seven\Vars\Validation HOW-TO
 ##
 
 ***In order for the library to generate expected outputs, always initialize with a valid array.***
 ***The library comes in handy when dealing with arrays such as $_POST, $_GET etc.***
+
+	- Initialization
+
+```php
+use Seven\Vars\Validation;
+
+$validation = Validation::init($_POST);
+
+####### OR ########
+
+$data = [
+ 'name' => 'Random 1',
+ 'email' => 'random1@mail.com',
+ 'password' => 'pa33w0rd',
+ 'site' => 'hybeexchange.com',
+ 'age' => 24,
+ 'nickname' => 'dick & harry'
+];
+
+$validation = new Validation($data);
+
+```
+
+	- Validation Rules
+
+```php
+
+$validation->rules([
+
+	#checks if a value was provided or not
+ 'name' => [ 'required' => true ],
+
+ #checks if value is a valid email address
+ 'email' => [ 'email' => true ],
+
+ #checks for minimum and maximum character length
+ 'password' => [ 'required' => true, 'min' => 8, 'max' => 32 ],
+
+ #checks if value is a valid website address
+ 'site' => [ 'url' => true ],
+
+ #check if value is a number, then check if it is greater than 17 and less than 60
+ 'age' => [ 'is_numeric' => true, 'gt' => 17, 'lt' => '60']
+ 
+]);
+
+```
+
+	- Validation Passed or Failed
+
+```php
+$validation->passed(): bool;
+```
+
+	- Validation Errors
+***Returns an array containing the first encountered error***
+***Returns an empty array, if all the validation rules passed successfully***
+
+```php
+$validation->errors(): array;
+```
