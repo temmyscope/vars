@@ -1,5 +1,5 @@
 <?php
-require __DIR__.'/../src/Validation2.php';
+require __DIR__.'/../src/Validation.php';
 
 use PHPUnit\Framework\TestCase;
 use Seven\Vars\Validation;
@@ -12,7 +12,7 @@ class ValidationTest extends TestCase
             'email' => 'random1@mail.com',
             'password' => 'pa33w0rd',
             'site' => 'hybeexchange.com',
-            'age' => 24,
+            'age' => 24, 'day' => 24,
             'nickname' => 'dick & harry'
         ];
         $this->validation = new Validation($data);
@@ -27,7 +27,6 @@ class ValidationTest extends TestCase
         $this->assertTrue( $this->validation->passed() );
     }
 
-    /*
     public function testEmailAndUrlRules()
     {
         $this->validation->rules([
@@ -59,12 +58,13 @@ class ValidationTest extends TestCase
         $this->assertTrue( $this->validation->passed() );
     }
 
+
     public function testGeneralRules()
     {
         $this->validation->rules([
-            'age' => [ 'same' => 'email' ]
+            'age' => [ 'is' => 24, 'same' => 'day' ]
         ]);
 
         $this->assertTrue( $this->validation->passed() );
-    }*/
+    }
 }

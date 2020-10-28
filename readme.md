@@ -475,7 +475,7 @@ $validation->rules([
  'site' => [ 'url' => true ],
 
  #check if value is a number, then check if it is greater than 17 and less than 60
- 'age' => [ 'is_numeric' => true, 'gt' => 17, 'lt' => '60']
+ 'age' => [ 'is_numeric' => true, 'gt' => 17, 'lt' => '60'],
 
 ]);
 
