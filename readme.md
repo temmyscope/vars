@@ -26,7 +26,7 @@ composer require sevens/vars
 ### Usage: Seven\Vars\Arrays HOW-TO
 ##
 
-***In order for the library to generate expected outputs, always initialize with a valid array of arrays***
+***In order for the library to generate expected outputs, initialize with a valid array of arrays.<br/>***
 ***Completely unit tested***
 
 
