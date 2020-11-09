@@ -36,12 +36,27 @@ class Validation
 
     public function valid()
     {
-        return $this->_passed;
+        return $this->passed();
     }
 
     public function passed()
     {
         return $this->_passed;
+    }
+
+    public function then(callable $callable)
+    {
+        if ($this->_passed) {
+            call_user_func_array($callable, []);
+        }
+        return $this;
+    }
+
+    public function catch(callable $callable)
+    {
+        if (!$this->_passed) {
+            return call_user_func_array($callable, [$this->errors]);
+        }
     }
 
     /**
@@ -84,6 +99,21 @@ class Validation
     {
         if (empty($value)) {
             $this->_errors[] = "{$display} is required";
+            return false;
+        }
+        return true;
+    }
+
+    /**
+    * @method bool stringValidator tests for string
+    * 
+    * @return bool
+    */
+
+    public function stringValidator($value, $ruleValue, $display): bool
+    {
+        if (!is_string($value)) {
+            $this->_errors[] = "{$display} must be a string.";
             return false;
         }
         return true;

@@ -5,8 +5,7 @@ namespace Seven\Vars;
 use Countable;
 use Serializable;
 use ArrayAccess;
-use Seven\Vars\Strings;
-
+use Seven\Vars\{Strings, Validation};
 /**
  * @author Elisha Temiloluwa a.k.a TemmyScope (temmyscope@protonmail.com)
  * @copyright MIT
@@ -50,6 +49,18 @@ class Arrays implements ArrayAccess, Countable, Serializable
             $newArray[$key] = (array) $value;
         }
         return new self($newArray);
+    }
+
+    public function validateOrDelete(array $rules)
+    {
+        foreach ($this->var as $key => &$value) {
+            $validation = Validation::init($value);
+            $validation->rules($rules);
+            if( !$validation->passed() ){
+                unset($this->var[$key]);
+            }
+        }
+        return $this;
     }
 
     public function offsetSet($offset, $value)
@@ -98,6 +109,28 @@ class Arrays implements ArrayAccess, Countable, Serializable
             $this->var[] = $value;
         }
         return $this;
+    }
+
+    public function sum(string $key)
+    {
+        $sum = 0;
+        foreach ($this->var as $key => $value) {
+            $sum += $value[$key];
+        }
+        return $sum;
+    }
+
+    public function avg(string $key)
+    {
+        $sum = 0;
+        $total = 0;
+        foreach ($this->var as $k => $v) {
+            if (array_key_exists($key, $v) && is_numeric($v[$key])) {
+                $sum += $v[$key];
+                $total++;
+            }
+        }
+        return (float)($sum/$total);
     }
 
   /**
@@ -279,8 +312,8 @@ class Arrays implements ArrayAccess, Countable, Serializable
     {
         if (is_int($index)) {
             foreach ($k_v as $k => $v) {
-                    $this->var[$index][$v] = $this->var[$index][$k];
-                    unset($this->var[$index][$k]);
+                $this->var[$index][$v] = $this->var[$index][$k];
+                unset($this->var[$index][$k]);
             }
         } else {
             foreach ($this->var as $key => &$value) {

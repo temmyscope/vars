@@ -189,6 +189,17 @@ $arrays->set(array $param, ?int $index = null): Arrays;
 $arrays->rename(array $k_v, ?int $index = null): Arrays;
 ```
 
+	- delete an array from a collection if it violates a validation rule
+
+```php
+$arrays->validateOrDelete([
+ 'name'=>[ 'required' => true, 'string' => true], 
+ 'age' => [ 'required' => true, 'numeric' => true]
+]);
+
+$arrays->get();
+```
+
 	- concatenates values of a particular key of multiple arrays using the passed 
 	separator and saving it on the new name
 
@@ -493,4 +504,21 @@ $validation->passed(): bool;
 
 ```php
 $validation->errors(): array;
+```
+
+	- Then - Catch Syntax from JavaScript ES6
+***The callable passed into the "Then" method is called if validation passed.<br>*** 
+***The catch method is loaded instead if validation failed.***
+
+
+***Both Then & Catch accept callables => closure, array callable, function***
+
+```php
+$validation->rules([
+
+])->then(function(){
+#This callable is called only when valiidations pass
+})->catch(function($errors){
+#This callable is called only the validation fails 
+});
 ```

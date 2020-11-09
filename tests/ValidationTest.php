@@ -58,7 +58,6 @@ class ValidationTest extends TestCase
         $this->assertTrue( $this->validation->passed() );
     }
 
-
     public function testGeneralRules()
     {
         $this->validation->rules([
@@ -67,4 +66,33 @@ class ValidationTest extends TestCase
 
         $this->assertTrue( $this->validation->passed() );
     }
+
+    public function testPromises()
+    {
+        $v = "";
+        $this->validation->rules([
+            'age' => [ 'is' => 24, 'same' => 'day' ]
+        ])->then(function() use(&$v){
+            $v = true;
+            return true;
+        })->catch(function($errors){
+            var_dump($errors);
+            return false;
+        });
+
+        $this->assertTrue( $v );
+
+        $v = $this->validation->rules([
+            'age' => [ 'is' => 23, 'same' => 'day' ]
+        ])->then(function() use(&$v){
+            $v = true;
+            return true;
+        })->catch(function($errors){
+            var_dump($errors);
+            return false;
+        });
+
+        $this->assertTrue( !$v );
+    }
+
 }

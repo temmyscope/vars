@@ -131,5 +131,17 @@ class ArraysTest extends TestCase
 
         $this->assertTrue( in_array(50, $data) );
     }
+
+    public function testValidators()
+    {
+        $this->arrays->validateOrDelete([
+            'name'=>[ 'required' => true, 'string' => true], 
+            'age' => [ 'required' => true, 'numeric' => true]
+        ]);
+
+        $this->assertTrue(count($this->arrays->get()) == 4);
+
+
+    }
     
 }
