@@ -428,8 +428,8 @@ public static function fixedLengthToken(int $len): string
 final public static function limit($var, $count = 2225, $offset = 0)
 
 /**
-* Returns a random that with very high entropy due to the specified string
-* will never return two equal strings 
+* Returns a random string with very high entropy due to the specified string;
+* It will never return two equal strings 
 * @param string str
 * @return string unique_name
 */
@@ -486,7 +486,7 @@ $validation->rules([
  'site' => [ 'url' => true ],
 
  #check if value is a number, then check if it is greater than 17 and less than 60
- 'age' => [ 'is_numeric' => true, 'gt' => 17, 'lt' => '60'],
+ 'age' => [ 'numeric' => true, 'gt' => 17, 'lt' => '60'],
 
 ]);
 

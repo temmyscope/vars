@@ -15,7 +15,7 @@ use Seven\Vars\{Strings, Validation};
 class Arrays implements ArrayAccess, Countable, Serializable
 {
     /**
-      *@property var
+    * @property var
     */
     
     protected $var = [];
