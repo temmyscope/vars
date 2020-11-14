@@ -55,7 +55,7 @@ class Validation
     public function catch(callable $callable)
     {
         if (!$this->_passed) {
-            return call_user_func_array($callable, [$this->errors]);
+            return call_user_func_array($callable, [$this->_errors]);
         }
     }
 
@@ -149,7 +149,7 @@ class Validation
     */
     protected function ltValidator($value, $ruleValue, $display): bool
     {
-        if ((int)$value > $ruleValue) {
+        if ($value > $ruleValue) {
             $this->_errors[] = "{$display} can not be greater than {$ruleValue} characters.";
             return false;
         }
@@ -161,7 +161,7 @@ class Validation
     */
     protected function gtValidator($value, $ruleValue, $display): bool
     {
-        if ((int)$value < $ruleValue) {
+        if ($value < $ruleValue) {
             $this->_errors[] = "{$display} can not be less than {$ruleValue} characters.";
             return false;
         }
