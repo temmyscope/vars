@@ -20,14 +20,14 @@ class ArraysTest extends TestCase
                 'nickname' => 'harry'
             ],
             2 => [
-                'name' => 'Random 3',
-                'age' => 24,
-                'nickname' => 'dick'
-            ],
-            3 => [
                 'name' => 'Random 4',
                 'age' => 21,
                 'nickname' => 'choudharry'
+            ],
+            3 => [
+                'name' => 'Random 5',
+                'age' => 21,
+                'nickname' => 'chourry'
             ]
         ];
         $this->arrays = new Arrays($data);
@@ -140,8 +140,12 @@ class ArraysTest extends TestCase
         ]);
 
         $this->assertTrue(count($this->arrays->get()) == 4);
+    }
 
-
+    public function testUnique()
+    {
+        $var = $this->arrays->unique('age')->get();
+        $this->assertEquals(3, count($var));
     }
     
 }

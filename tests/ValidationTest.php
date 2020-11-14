@@ -13,6 +13,7 @@ class ValidationTest extends TestCase
             'password' => 'pa33w0rd',
             'site' => 'hybeexchange.com',
             'age' => 24, 'day' => 24,
+            'dob' => '1997-09-03',
             'nickname' => 'dick & harry'
         ];
         $this->validation = new Validation($data);
@@ -61,7 +62,8 @@ class ValidationTest extends TestCase
     public function testGeneralRules()
     {
         $this->validation->rules([
-            'age' => [ 'is' => 24, 'same' => 'day' ]
+            'age' => [ 'is' => 24, 'same' => 'day' ],
+            'dob' => [ 'lt' => date('Y-m-d') ]
         ]);
 
         $this->assertTrue( $this->validation->passed() );

@@ -63,6 +63,17 @@ class Arrays implements ArrayAccess, Countable, Serializable
         return $this;
     }
 
+    public function unique(?string $key = null)
+    {
+        if (!is_null($key)) {
+            $tmp = array_unique(array_column($this->var, $key));
+            $this->var = array_intersect_key($this->var, $tmp);
+        }else{
+            $this->var = array_unique($this->var, SORT_REGULAR);
+        }
+        return $this;
+    }
+
     public function offsetSet($offset, $value)
     {
         if (is_null($offset)) {
