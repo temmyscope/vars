@@ -57,6 +57,7 @@ class Validation
         if (!$this->_passed) {
             return call_user_func_array($callable, [$this->_errors]);
         }
+        return $this;
     }
 
     /**
@@ -91,9 +92,14 @@ class Validation
         return $this->_errors;
     }
 
-    /**
-    * @method bool gtValidator tests for greater than
-    */
+    protected function safeValidator($value, $ruleValue, $display): bool
+    {
+        if ( !Strings::isSafe($value) ) {
+            $this->_errors[] = "{$display} can only contain space,-,_ and alphanumeric characters";
+            return false;
+        }
+        return true;
+    }
 
     protected function requiredValidator($value, $ruleValue, $display): bool
     {
@@ -105,7 +111,7 @@ class Validation
     }
 
     /**
-    * @method bool stringValidator tests for string
+    * @method stringValidator tests for string
     * 
     * @return bool
     */
@@ -120,7 +126,9 @@ class Validation
     }
 
     /**
-    * @method bool emailValidator tests for valid email
+    * @method emailValidator tests for valid email
+    *
+    * @return bool
     */
 
     protected function emailValidator($value, $ruleValue, $display): bool
@@ -133,7 +141,9 @@ class Validation
     }
 
     /**
-    * @method bool gtValidator tests for greater than
+    * @method urlValidator tests for valid url
+    *
+    * @return bool
     */
     protected function urlValidator($value, $ruleValue, $display): bool
     {
@@ -145,7 +155,9 @@ class Validation
     }
 
     /**
-    * @method bool ltValidator tests for lesser than
+    * @method ltValidator tests for lesser than
+    *
+    * @return bool
     */
     protected function ltValidator($value, $ruleValue, $display): bool
     {
@@ -157,7 +169,9 @@ class Validation
     }
 
     /**
-    * @method bool gtValidator tests for greater than
+    * @method gtValidator tests for greater than
+    * 
+    * @return bool
     */
     protected function gtValidator($value, $ruleValue, $display): bool
     {
@@ -169,7 +183,9 @@ class Validation
     }
 
     /**
-    * @method bool minValidator tests for minimum length
+    * @method minValidator tests for minimum length
+    *
+    * @return bool
     */
     protected function minValidator($value, $ruleValue, $display): bool
     {
@@ -181,7 +197,9 @@ class Validation
     }
 
     /**
-    * @method bool maxValidator tests for maximum length
+    * @method maxValidator tests for maximum length
+    *
+    * @return bool
     */
     protected function maxValidator($value, $ruleValue, $display): bool
     {
@@ -193,7 +211,9 @@ class Validation
     }
 
     /**
-    * @method bool lenValidator tests for exact length
+    * @method lenValidator tests for exact length
+    *
+    * @return bool
     */
     protected function lenValidator($value, $ruleValue, $display): bool
     {
@@ -205,7 +225,9 @@ class Validation
     }
 
     /**
-    * @method bool matchValidator matches a string using regular expression
+    * @method matchValidator matches a string using regular expression
+    *
+    * @return bool
     */
     protected function matchValidator($value, $ruleValue, $display): bool
     {
@@ -216,6 +238,11 @@ class Validation
         return true;
     }
 
+    /**
+    * @method numericValidator matches a string using regular expression
+    *
+    * @return bool
+    */
     protected function numericValidator($value, $ruleValue, $display): bool
     {
         if (!is_numeric($value)) {
@@ -259,7 +286,7 @@ class Validation
             return false;
         }
         if($value == $ruleValue){
-            $this->_errors[] = "{$display} can not be {$ruleValue}";
+            $this->_errors[] = "{$display} can not be '{$ruleValue}'";
             return false;
         }
         return true;
