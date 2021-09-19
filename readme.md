@@ -295,6 +295,12 @@ $arrays->enumerate(): Generator;
 $arrays->count(): int;
 ```
 	
+	- checks if the array is empty
+
+```php
+$arrays->isEmpty(): bool;
+```
+
 	- For returning the array at its current state
 
 ```php

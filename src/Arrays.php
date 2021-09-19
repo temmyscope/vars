@@ -258,10 +258,10 @@ class Arrays implements ArrayAccess, Countable, Serializable
 
     /**
     * Returns the first array
-    * @return array
+    * @return array|object
     */
     
-    public function first(): array
+    public function first(): array|object
     {
         return $this->var[0];
     }
@@ -359,6 +359,7 @@ class Arrays implements ArrayAccess, Countable, Serializable
 
     /**
     * Extract key from the initial array using the key, value pair in the passed argument
+    * array at an index is returned if atleat one condition is met
     * @param $k_v = [ 'key' => 'value' ]
     * @return Arrays $this
     */
@@ -420,7 +421,7 @@ class Arrays implements ArrayAccess, Countable, Serializable
     {
         foreach ($this->var as $k => &$v) {
             if (array_key_exists($key, $v)) {
-                    unset($this->var[$k]);
+                unset($this->var[$k]);
             }
         }
         return $this;
@@ -573,6 +574,16 @@ class Arrays implements ArrayAccess, Countable, Serializable
     public function count(): int
     {
         return count($this->var);
+    }
+
+    /**
+    * Returns whether array isempty
+    * @return bool
+    */
+
+    public function isEmpty(): bool
+    {
+        return empty($this->var);
     }
 
     /**
